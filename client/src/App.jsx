@@ -55,6 +55,7 @@ export default function App() {
       {/* 11 Public Pages */}
       <Route path="/" element={<Home />} />
       <Route path="/policies" element={<PoliciesCatalog />} />
+      <Route path="/policies/compare" element={<ComparePolicies />} />
       <Route path="/policies/:id" element={<PolicyDetails />} />
       <Route path="/compare" element={<ComparePolicies />} />
       <Route path="/how-it-works" element={<HowClaimsWork />} />
