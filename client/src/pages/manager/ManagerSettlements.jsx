@@ -1,7 +1,7 @@
 import { formatINR } from '../../utils/currency';
 import React, { useState, useEffect } from 'react';
 import { 
-  DollarSign, CheckCircle2, Clock, AlertCircle, Search, 
+  IndianRupee, CheckCircle2, Clock, AlertCircle, Search, 
   ExternalLink, Filter, ShieldCheck, ArrowUpRight 
 } from 'lucide-react';
 import api from '../../services/api';
@@ -103,7 +103,7 @@ export default function ManagerSettlements() {
             <p className="text-xs text-slate-400 mt-0.5">Total settlement files</p>
           </div>
           <div className="w-10 h-10 bg-blue-50 text-[#0000FF] rounded-lg flex items-center justify-center">
-            <DollarSign className="w-5 h-5" />
+            <IndianRupee className="w-5 h-5" />
           </div>
         </div>
       </div>
@@ -145,7 +145,7 @@ export default function ManagerSettlements() {
           </div>
         ) : filteredSettlements.length === 0 ? (
           <div className="p-12 text-center text-slate-400">
-            <DollarSign className="w-12 h-12 mx-auto text-slate-300 mb-2" />
+            <IndianRupee className="w-12 h-12 mx-auto text-slate-300 mb-2" />
             <p className="font-medium text-slate-600">No settlement records found</p>
           </div>
         ) : (

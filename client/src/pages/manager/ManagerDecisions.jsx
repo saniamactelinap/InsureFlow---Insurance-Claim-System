@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   FileCheck, Search, Filter, AlertCircle, Eye, 
-  Calendar, DollarSign, Clock, ShieldAlert, ArrowRight, User 
+  Calendar, Clock, ShieldAlert, ArrowRight, User 
 } from 'lucide-react';
 import api from '../../services/api';
 import StatusBadge from '../../components/common/StatusBadge';

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   CheckCircle, AlertTriangle, Clock, ArrowRight, ShieldCheck, 
-  DollarSign, TrendingUp, Layers, UserCheck, Eye, RefreshCw 
+  IndianRupee, TrendingUp, Layers, UserCheck, Eye, RefreshCw 
 } from 'lucide-react';
 import api from '../../services/api';
 import StatusBadge from '../../components/common/StatusBadge';
@@ -157,7 +157,7 @@ export default function ManagerDashboard() {
             </span>
           </div>
           <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
-            <DollarSign className="w-6 h-6" />
+            <IndianRupee className="w-6 h-6" />
           </div>
         </div>
 

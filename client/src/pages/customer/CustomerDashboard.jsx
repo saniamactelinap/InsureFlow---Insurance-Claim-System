@@ -6,7 +6,6 @@ import {
   Clock,
   AlertCircle,
   CheckCircle2,
-  DollarSign,
   ShieldCheck,
   PlusCircle,
   Building2,

@@ -21,7 +21,7 @@ export const FAQ = () => {
     },
     {
       q: 'When is a physical or technical surveyor required?',
-      a: 'Automated rules trigger surveyor assessment when a claim involves vehicle damage, property damage, or exceeds the high-value claim threshold ($5,000). A certified surveyor is assigned to schedule an inspection and submit a structured repair report.',
+      a: 'Automated rules trigger surveyor assessment when a claim involves vehicle damage, property damage, or exceeds the high-value claim threshold (₹4,00,000). A certified surveyor is assigned to schedule an inspection and submit a structured repair report.',
     },
     {
       q: 'Can an officer approve payouts on their own without a manager?',

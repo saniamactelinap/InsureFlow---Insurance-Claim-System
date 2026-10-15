@@ -185,7 +185,7 @@ class RuleEngineService {
         ruleId: 'RULE_COVERAGE_LIMIT',
         name: 'Coverage Limit Compliance',
         status: 'PASS',
-        reason: `Requested amount ($${claim.requestedAmount.toLocaleString()}) is within maximum coverage limit ($${maxLimit.toLocaleString()}).`,
+        reason: `Requested amount (₹${Number(claim.requestedAmount || 0).toLocaleString('en-IN')}) is within maximum coverage limit (₹${Number(maxLimit || 0).toLocaleString('en-IN')}).`,
         evidence: { requestedAmount: claim.requestedAmount, coverageLimit: maxLimit },
         severity: 'BLOCKING',
       };
@@ -194,7 +194,7 @@ class RuleEngineService {
         ruleId: 'RULE_COVERAGE_LIMIT',
         name: 'Coverage Limit Compliance',
         status: 'FLAGGED',
-        reason: `Requested amount ($${claim.requestedAmount.toLocaleString()}) exceeds the total coverage limit ($${maxLimit.toLocaleString()}). Payout will be capped.`,
+        reason: `Requested amount (₹${Number(claim.requestedAmount || 0).toLocaleString('en-IN')}) exceeds the total coverage limit (₹${Number(maxLimit || 0).toLocaleString('en-IN')}). Payout will be capped.`,
         evidence: { requestedAmount: claim.requestedAmount, coverageLimit: maxLimit },
         severity: 'FLAGGED',
       };
@@ -307,7 +307,7 @@ class RuleEngineService {
         ruleId: 'RULE_SURVEYOR_TRIGGER',
         name: 'Surveyor Technical Inspection Requirement',
         status: 'REQUIRES_REVIEW',
-        reason: `Claim exceeds $${HIGH_VALUE_THRESHOLD.toLocaleString()} threshold or involves physical property/vehicle damage, requiring physical or technical surveyor assessment.`,
+        reason: `Claim exceeds ₹${Number(HIGH_VALUE_THRESHOLD).toLocaleString('en-IN')} threshold or involves physical property/vehicle damage, requiring physical or technical surveyor assessment.`,
         evidence: { requestedAmount: claim.requestedAmount, category: claim.category },
         severity: 'INFO',
       };

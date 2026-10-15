@@ -211,7 +211,7 @@ export const OfficerExternalPolicies = () => {
                 <span className="text-slate-500">Customer:</span> <strong>{selectedPolicy.customer?.name}</strong>
               </div>
               <div>
-                <span className="text-slate-500">Coverage:</span> <strong>${selectedPolicy.coverageAmount?.toLocaleString()}</strong>
+                <span className="text-slate-500">Coverage:</span> <strong>{formatINR(selectedPolicy.coverageAmount)}</strong>
               </div>
             </div>
 

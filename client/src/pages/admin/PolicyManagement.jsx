@@ -2,7 +2,7 @@ import { formatINR } from '../../utils/currency';
 import React, { useState, useEffect } from 'react';
 import { 
   Shield, Plus, Search, Edit3, Trash2, Eye, 
-  CheckCircle, XCircle, AlertCircle, DollarSign, Layers,
+  CheckCircle, XCircle, AlertCircle, Layers,
   ExternalLink
 } from 'lucide-react';
 import api from '../../services/api';

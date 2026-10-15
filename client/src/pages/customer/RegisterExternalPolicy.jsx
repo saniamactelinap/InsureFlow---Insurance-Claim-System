@@ -160,7 +160,7 @@ export const RegisterExternalPolicy = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Total Coverage Limit ($) <span className="text-rose-500">*</span>
+                  Total Coverage Limit (₹) <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="number"

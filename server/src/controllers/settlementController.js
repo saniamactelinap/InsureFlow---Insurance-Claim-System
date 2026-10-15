@@ -84,7 +84,7 @@ export const updateSettlementStatus = async (req, res, next) => {
 
       await notificationService.notifyUser(settlement.customer, {
         title: 'Settlement Payment Completed!',
-        message: `Your insurance payout of $${settlement.approvedAmount.toLocaleString()} has been disbursed (Txn Ref: ${settlement.paymentReference}).`,
+        message: `Your insurance payout of ₹${Number(settlement.approvedAmount || 0).toLocaleString('en-IN')} has been disbursed (Txn Ref: ${settlement.paymentReference}).`,
         type: 'SETTLEMENT_PROCESSED',
         link: `/customer/claims/${settlement.claim._id}`,
       });

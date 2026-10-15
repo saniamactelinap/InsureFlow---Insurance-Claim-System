@@ -50,7 +50,7 @@ export const approveClaim = async (req, res, next) => {
     if (claim.customerPolicy && finalAmount > claim.customerPolicy.coverageAmount) {
       return res.status(400).json({
         success: false,
-        message: `Approved amount ($${finalAmount.toLocaleString()}) cannot exceed policy coverage limit ($${claim.customerPolicy.coverageAmount.toLocaleString()}).`,
+        message: `Approved amount (₹${Number(finalAmount).toLocaleString('en-IN')}) cannot exceed policy coverage limit (₹${Number(claim.customerPolicy.coverageAmount).toLocaleString('en-IN')}).`,
       });
     }
 
@@ -58,7 +58,7 @@ export const approveClaim = async (req, res, next) => {
     await stateMachineService.transition(claim._id, 'APPROVED', req.user, {
       approvedAmount: finalAmount,
       managerNotes: managerNotes || 'Approved by claims operations manager.',
-      notes: `Claim approved for $${finalAmount.toLocaleString()} by Manager ${req.user.name}.`,
+      notes: `Claim approved for ₹${Number(finalAmount).toLocaleString('en-IN')} by Manager ${req.user.name}.`,
     });
 
     // Automatically transition to SETTLEMENT_PENDING
@@ -93,14 +93,14 @@ export const approveClaim = async (req, res, next) => {
 
     await notificationService.notifyUser(claim.customer, {
       title: `Claim ${claim.claimReference} Approved!`,
-      message: `Great news! Your claim has been approved for $${finalAmount.toLocaleString()}. Payout reference ${settlementRef} is being prepared.`,
+      message: `Great news! Your claim has been approved for ₹${Number(finalAmount).toLocaleString('en-IN')}. Payout reference ${settlementRef} is being prepared.`,
       type: 'CLAIM_APPROVED',
       link: `/customer/claims/${claim._id}`,
     });
 
     res.json({
       success: true,
-      message: `Claim approved for $${finalAmount.toLocaleString()} and settlement reference ${settlementRef} initiated.`,
+      message: `Claim approved for ₹${Number(finalAmount).toLocaleString('en-IN')} and settlement reference ${settlementRef} initiated.`,
       data: {
         claim,
         settlement,

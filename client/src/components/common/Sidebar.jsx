@@ -11,7 +11,7 @@ import {
   Settings2,
   FileSearch,
   Activity,
-  DollarSign,
+  IndianRupee,
   Building2,
   CalendarCheck,
 } from 'lucide-react';
@@ -44,7 +44,7 @@ export const Sidebar = () => {
           { to: '/customer/policies/register-external', label: 'Register External Policy', icon: Building2 },
           { to: '/customer/claims/new', label: 'Submit New Claim', icon: FilePlus },
           { to: '/customer/claims', label: 'My Claims History', icon: Files },
-          { to: '/customer/settlements', label: 'Settlement Payouts', icon: DollarSign },
+          { to: '/customer/settlements', label: 'Settlement Payouts', icon: IndianRupee },
         ];
       case 'OFFICER':
         return [
@@ -61,7 +61,7 @@ export const Sidebar = () => {
         return [
           { to: '/manager/dashboard', label: 'Manager Dashboard', icon: LayoutDashboard },
           { to: '/manager/decisions', label: 'Pending Claim Decisions', icon: CheckCircle },
-          { to: '/manager/settlements', label: 'Settlement Authorizations', icon: DollarSign },
+          { to: '/manager/settlements', label: 'Settlement Authorizations', icon: IndianRupee },
         ];
       case 'ADMIN':
         return [

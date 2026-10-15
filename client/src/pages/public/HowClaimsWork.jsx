@@ -5,7 +5,7 @@ import {
   Sparkles,
   ShieldCheck,
   UserCheck,
-  DollarSign,
+  IndianRupee,
   ArrowRight,
   CheckCircle2,
 } from 'lucide-react';
@@ -49,7 +49,7 @@ export const HowClaimsWork = () => {
         'The automated rules engine evaluates the claim against active policy boundaries. It validates that the incident occurred during active coverage, that the category matches, that requested amounts do not exceed policy limits, and checks for duplicate submissions.',
       features: [
         'Clear, explainable outcomes: PASS, FAIL, FLAGGED, or REQUIRES_REVIEW',
-        'High-value claims (>= $5,000) automatically trigger surveyor field inspections',
+        'High-value claims (>= ₹4,00,000) automatically trigger surveyor field inspections',
         'Tamper-proof storage of rule versions, evaluation scores, and evidence',
       ],
     },
@@ -69,7 +69,7 @@ export const HowClaimsWork = () => {
     {
       num: '05',
       title: 'Manager Approval & Transparent Settlement Payout',
-      icon: DollarSign,
+      icon: IndianRupee,
       color: 'bg-emerald-600',
       description:
         'A claims manager reviews the officer recommendations, surveyor findings, and rule compliance before authorizing the final settlement amount. A formal disbursement ledger is created, and the customer tracks payout status until completion.',

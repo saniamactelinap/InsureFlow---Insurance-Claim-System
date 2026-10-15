@@ -143,7 +143,7 @@ export const submitSurveyReport = async (req, res, next) => {
     await assignment.save();
 
     await stateMachineService.transition(assignment.claim, 'SURVEY_REPORT_SUBMITTED', req.user, {
-      notes: `Survey report submitted by inspector. Recommended amount: $${Number(recommendedSettlementAmount).toLocaleString()}.`,
+      notes: `Survey report submitted by inspector. Recommended amount: ₹${Number(recommendedSettlementAmount || 0).toLocaleString('en-IN')}.`,
     });
 
     await auditService.log(req, 'SUBMIT_SURVEY_REPORT', 'SurveyReport', report._id, {

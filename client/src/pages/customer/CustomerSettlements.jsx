@@ -1,7 +1,7 @@
 import { formatINR } from '../../utils/currency';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { DollarSign, CheckCircle2, Clock, AlertCircle, ArrowRight } from 'lucide-react';
+import { IndianRupee, CheckCircle2, Clock, AlertCircle, ArrowRight } from 'lucide-react';
 import api from '../../services/api';
 import { RoleLayout } from '../../components/common/RoleLayout';
 import { Header } from '../../components/common/Header';
@@ -40,7 +40,7 @@ export const CustomerSettlements = () => {
             <div className="p-16 text-center text-slate-400 text-xs">Loading settlement records...</div>
           ) : settlements.length === 0 ? (
             <div className="p-16 text-center text-slate-400 text-xs">
-              <DollarSign className="w-12 h-12 text-slate-300 mx-auto mb-2" />
+              <IndianRupee className="w-12 h-12 text-slate-300 mx-auto mb-2" />
               <p className="font-semibold text-slate-700">No settlement payouts on file yet.</p>
               <p className="mt-1 text-slate-500">Settlement vouchers are issued once a manager approves your claim.</p>
             </div>

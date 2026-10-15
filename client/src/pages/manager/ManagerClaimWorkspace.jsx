@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
   ShieldCheck, AlertTriangle, ArrowLeft, CheckCircle, XCircle, 
-  RotateCcw, FileText, User, Calendar, DollarSign, Clock, 
+  RotateCcw, FileText, User, Calendar, Clock, 
   Layers, Camera, ChevronRight, Eye 
 } from 'lucide-react';
 import api from '../../services/api';

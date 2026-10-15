@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { 
   Shield, Check, XCircle, FileText, AlertCircle, ShoppingCart, 
   ArrowLeft, ExternalLink, Info, HeartPulse, Car, Home as HomeIcon,
-  Calendar, CheckCircle2, DollarSign, Clock, HelpCircle, Lock
+  Calendar, CheckCircle2, Clock, HelpCircle, Lock
 } from 'lucide-react';
 import { Navbar } from '../../components/common/Navbar';
 import { Footer } from '../../components/common/Footer';

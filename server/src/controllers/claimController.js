@@ -212,7 +212,7 @@ export const createClaim = async (req, res, next) => {
 
     await notificationService.notifyUser(req.user._id, {
       title: `Claim ${claim.claimReference} Submitted`,
-      message: `Your claim submission of $${claim.requestedAmount.toLocaleString()} has been received and queued for automated document verification.`,
+      message: `Your claim submission of ₹${Number(claim.requestedAmount || 0).toLocaleString('en-IN')} has been received and queued for automated document verification.`,
       type: 'CLAIM_SUBMITTED',
       link: `/customer/claims/${claim._id}`,
     });
@@ -485,7 +485,7 @@ export const recommendClaim = async (req, res, next) => {
     const { recommendation, officerNotes, recommendedAmount } = req.body; // recommendation: 'APPROVE' or 'REJECT' or 'ESCALATE'
 
     const updatedClaim = await stateMachineService.transition(id, 'MANAGER_REVIEW', req.user, {
-      officerNotes: `Recommendation [${recommendation}]: ${officerNotes || ''} (Recommended amount: $${recommendedAmount || 0})`,
+      officerNotes: `Recommendation [${recommendation}]: ${officerNotes || ''} (Recommended amount: ₹${Number(recommendedAmount || 0).toLocaleString('en-IN')})`,
       notes: `Officer completed review and escalated claim for manager decision with recommendation: ${recommendation}.`,
     });
 

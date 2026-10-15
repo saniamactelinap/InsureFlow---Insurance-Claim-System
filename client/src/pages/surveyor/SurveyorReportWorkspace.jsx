@@ -7,7 +7,6 @@ import {
   Camera,
   Wrench,
   CheckCircle2,
-  DollarSign,
   MapPin,
   Clock,
   UploadCloud,
