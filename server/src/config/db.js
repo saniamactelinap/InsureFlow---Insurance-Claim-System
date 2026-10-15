@@ -41,9 +41,19 @@ export const startMemoryDB = async () => {
 
 export const connectDB = async () => {
   const isTestEnv = process.env.NODE_ENV === 'test' || process.env.JEST_WORKER_ID !== undefined;
+  const isProduction = process.env.NODE_ENV === 'production';
 
-  // If running in automated tests or explicitly configured to use in-memory database
-  if (process.env.USE_MEMORY_DB === 'true' || isTestEnv) {
+  // In production, embedded memory DB is strictly forbidden
+  if (isProduction && process.env.USE_MEMORY_DB === 'true') {
+    const memDbError = new Error(
+      '[DB Configuration Error] USE_MEMORY_DB=true cannot be used in production mode.'
+    );
+    console.error(memDbError.message);
+    throw memDbError;
+  }
+
+  // If running in automated tests or explicitly configured to use in-memory database in non-production
+  if ((process.env.USE_MEMORY_DB === 'true' && !isProduction) || isTestEnv) {
     return await startMemoryDB();
   }
 
@@ -51,7 +61,7 @@ export const connectDB = async () => {
 
   // 2. Validate environment variable existence
   if (!uri || !uri.trim()) {
-    if (process.env.NODE_ENV !== 'production') {
+    if (!isProduction) {
       console.warn('[DB] MONGODB_URI is not set. Falling back to In-Memory MongoDB for development.');
       return await startMemoryDB();
     }
@@ -111,7 +121,7 @@ export const connectDB = async () => {
     }
 
     // In development or test environments, fallback to embedded MongoMemoryServer
-    const allowFallback = process.env.NODE_ENV !== 'production' || process.env.ALLOW_MEMORY_FALLBACK === 'true';
+    const allowFallback = !isProduction && (process.env.NODE_ENV !== 'production' || process.env.ALLOW_MEMORY_FALLBACK === 'true');
 
     if (allowFallback) {
       console.warn('\n------------------------------------------------------');
@@ -127,7 +137,7 @@ export const connectDB = async () => {
       }
     }
 
-    console.error('Embedded MongoDB fallback is disabled. Halting startup.');
+    console.error('[DB] Production Atlas connection failed or embedded fallback is disabled. Halting startup.');
     console.error('======================================================\n');
 
     throw err;
