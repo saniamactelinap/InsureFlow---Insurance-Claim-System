@@ -773,7 +773,8 @@ export const seedDatabaseIfEmpty = async () => {
     const surveyor = await User.create({
       name: 'Devon Reed',
       email: 'surveyor@insureflow.com',
-      password: 'SURVEYOR',
+      password: 'Surveyor@123',
+      role: 'SURVEYOR',
       phone: '+1 (555) 019-9182',
       department: 'Technical Field Inspection',
       isActive: true,

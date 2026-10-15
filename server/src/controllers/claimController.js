@@ -88,18 +88,24 @@ export const createClaim = async (req, res, next) => {
           uploadedBy: req.user._id,
         });
 
+        const discrepancy = ocrService.evaluateDiscrepancy(claim, pDoc.fields || {});
+
         const ocrJob = await OCRJob.create({
           claim: claim._id,
           document: doc._id,
-          status: pDoc.success === false ? 'FAILED' : 'COMPLETED',
+          status: pDoc.status === 'FAILED' ? 'FAILED' : (pDoc.reviewStatus === 'VERIFIED' ? 'COMPLETED' : 'NEEDS_REVIEW'),
           confidenceScore: pDoc.confidenceScore ?? 0,
           opticalConfidence: pDoc.opticalConfidence ?? 0,
           fieldExtractionConfidence: pDoc.fieldExtractionConfidence ?? 0,
           reviewStatus: pDoc.reviewStatus ?? 'NEEDS_MANUAL_REVIEW',
+          documentType: pDoc.documentType || 'general_document',
+          provider: pDoc.provider || (pDoc.extractionMethod && pDoc.extractionMethod.includes('gemini') ? 'gemini_vision' : (pDoc.extractionMethod && pDoc.extractionMethod.includes('scanned') ? 'scanned_pdf_ocr' : (pDoc.extractionMethod && pDoc.extractionMethod.includes('pdf') ? 'pdf_parse' : 'tesseract'))),
+          handwritingDetected: pDoc.handwritingDetected || false,
+          candidateReadings: pDoc.candidateReadings || {},
+          fieldMetadata: pDoc.fieldMetadata || {},
+          engineComparison: pDoc.engineComparison || null,
+          discrepancy,
           rawText: pDoc.rawText || '',
-          provider: (pDoc.extractionMethod && pDoc.extractionMethod.includes('scanned'))
-            ? 'scanned_pdf_ocr'
-            : ((pDoc.extractionMethod && pDoc.extractionMethod.includes('pdf')) ? 'pdf_parse' : (pDoc.extractionMethod === 'error' ? 'unknown' : 'tesseract')),
           extractedFields: {
             invoiceOrBillNumber: pDoc.fields?.invoiceNumber ?? null,
             detectedDate: pDoc.fields?.invoiceDate ?? null,
@@ -146,19 +152,27 @@ export const createClaim = async (req, res, next) => {
           claim.ocrStatus = 'IN_PROGRESS';
           await claim.save();
 
-          const ocrResult = await ocrService.processDocument(file.path, file.mimetype, docCategory);
+          const ocrResult = await ocrService.processDocument(file.path, file.mimetype, docCategory, {
+            claim,
+            originalName: file.originalname,
+          });
 
           const ocrJob = await OCRJob.create({
             claim: claim._id,
             document: doc._id,
-            status: ocrResult.error ? 'FAILED' : 'COMPLETED',
-            provider: ocrResult.extractionMethod?.includes('scanned')
-              ? 'scanned_pdf_ocr'
-              : (ocrResult.extractionMethod?.includes('pdf') ? 'pdf_parse' : (ocrResult.extractionMethod === 'error' ? 'unknown' : 'tesseract')),
+            status: ocrResult.error ? 'FAILED' : (ocrResult.reviewStatus === 'VERIFIED' ? 'COMPLETED' : 'NEEDS_REVIEW'),
+            provider: ocrResult.provider || 'tesseract',
             confidenceScore: ocrResult.confidenceScore ?? 0,
             opticalConfidence: ocrResult.opticalConfidence ?? 0,
             fieldExtractionConfidence: ocrResult.fieldExtractionConfidence ?? 0,
             reviewStatus: ocrResult.reviewStatus ?? 'NEEDS_MANUAL_REVIEW',
+            documentType: ocrResult.documentType || 'general_document',
+            handwritingDetected: ocrResult.handwritingDetected || false,
+            candidateReadings: ocrResult.candidateReadings || {},
+            fieldMetadata: ocrResult.fieldMetadata || {},
+            engineComparison: ocrResult.engineComparison || null,
+            discrepancy: ocrResult.discrepancy || null,
+            sourcePagesCount: ocrResult.sourcePagesCount || 1,
             rawText: ocrResult.rawText || '',
             extractedFields: ocrResult.extractedFields,
             errorMessage: ocrResult.error || '',
@@ -371,13 +385,27 @@ export const uploadAdditionalDocument = async (req, res, next) => {
 
     // Run OCR
     try {
-      const ocrResult = await ocrService.processDocument(req.file.path, req.file.mimetype, doc.documentCategory);
+      const ocrResult = await ocrService.processDocument(req.file.path, req.file.mimetype, doc.documentCategory, {
+        claim,
+        originalName: req.file.originalname,
+      });
       const ocrJob = await OCRJob.create({
         claim: claim._id,
         document: doc._id,
-        status: ocrResult.error ? 'FAILED' : 'COMPLETED',
-        confidenceScore: ocrResult.confidenceScore,
-        rawText: ocrResult.rawText,
+        status: ocrResult.error ? 'FAILED' : (ocrResult.reviewStatus === 'VERIFIED' ? 'COMPLETED' : 'NEEDS_REVIEW'),
+        provider: ocrResult.provider || 'tesseract',
+        confidenceScore: ocrResult.confidenceScore ?? 0,
+        opticalConfidence: ocrResult.opticalConfidence ?? 0,
+        fieldExtractionConfidence: ocrResult.fieldExtractionConfidence ?? 0,
+        reviewStatus: ocrResult.reviewStatus ?? 'NEEDS_MANUAL_REVIEW',
+        documentType: ocrResult.documentType || 'general_document',
+        handwritingDetected: ocrResult.handwritingDetected || false,
+        candidateReadings: ocrResult.candidateReadings || {},
+        fieldMetadata: ocrResult.fieldMetadata || {},
+        engineComparison: ocrResult.engineComparison || null,
+        discrepancy: ocrResult.discrepancy || null,
+        sourcePagesCount: ocrResult.sourcePagesCount || 1,
+        rawText: ocrResult.rawText || '',
         extractedFields: ocrResult.extractedFields,
         errorMessage: ocrResult.error || '',
         processingDurationMs: ocrResult.durationMs,

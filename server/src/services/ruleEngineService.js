@@ -18,39 +18,70 @@ class RuleEngineService {
     const policy = claim.customerPolicy;
     const documents = await ClaimDocument.find({ claim: claimId });
 
-    // Fetch enabled rules or use defaults
-    const dbRules = await ConfigurableRule.find({ isEnabled: true });
-    const rulesMap = new Map(dbRules.map(r => [r.ruleId, r]));
+    // Fetch configurable rules from database
+    const totalConfiguredRules = await ConfigurableRule.countDocuments();
+    const enabledDbRules = await ConfigurableRule.find({ isEnabled: true });
+    const enabledRulesMap = new Map(enabledDbRules.map(r => [r.ruleId, r]));
+
+    // If rules are configured in the database, only execute active/enabled ones.
+    // If the collection is completely unseeded, fall back to executing defaults.
+    const isRuleActive = (ruleId) => {
+      if (totalConfiguredRules === 0) return true;
+      return enabledRulesMap.has(ruleId);
+    };
+
+    const applyConfig = (evaluation, ruleId) => {
+      const cfg = enabledRulesMap.get(ruleId);
+      if (cfg && cfg.severity) {
+        evaluation.severity = cfg.severity;
+      }
+      return evaluation;
+    };
 
     const ruleEvaluations = [];
 
     // 1. RULE: Policy Active on Incident Date
-    const ruleActiveDate = this.evaluatePolicyActiveDate(claim, policy);
-    ruleEvaluations.push(ruleActiveDate);
+    if (isRuleActive('RULE_ACTIVE_POLICY_ON_INCIDENT')) {
+      const ruleActiveDate = this.evaluatePolicyActiveDate(claim, policy);
+      ruleEvaluations.push(applyConfig(ruleActiveDate, 'RULE_ACTIVE_POLICY_ON_INCIDENT'));
+    }
 
     // 2. RULE: Insurance Category Match
-    const ruleCategoryMatch = this.evaluateCategoryMatch(claim, policy);
-    ruleEvaluations.push(ruleCategoryMatch);
+    if (isRuleActive('RULE_CATEGORY_MATCH')) {
+      const ruleCategoryMatch = this.evaluateCategoryMatch(claim, policy);
+      ruleEvaluations.push(applyConfig(ruleCategoryMatch, 'RULE_CATEGORY_MATCH'));
+    }
 
     // 3. RULE: Coverage Limit Compliance
-    const ruleCoverageLimit = this.evaluateCoverageLimit(claim, policy);
-    ruleEvaluations.push(ruleCoverageLimit);
+    if (isRuleActive('RULE_COVERAGE_LIMIT')) {
+      const ruleCoverageLimit = this.evaluateCoverageLimit(claim, policy);
+      ruleEvaluations.push(applyConfig(ruleCoverageLimit, 'RULE_COVERAGE_LIMIT'));
+    }
 
     // 4. RULE: Required Documents Completeness
-    const ruleDocs = this.evaluateDocumentCompleteness(claim, documents);
-    ruleEvaluations.push(ruleDocs);
+    if (isRuleActive('RULE_REQUIRED_DOCUMENTS')) {
+      const ruleDocs = this.evaluateDocumentCompleteness(claim, documents);
+      ruleEvaluations.push(applyConfig(ruleDocs, 'RULE_REQUIRED_DOCUMENTS'));
+    }
 
     // 5. RULE: Duplicate Submission Detection
-    const ruleDuplicate = await this.evaluateDuplicateClaim(claim);
-    ruleEvaluations.push(ruleDuplicate);
+    let ruleDuplicate = null;
+    if (isRuleActive('RULE_DUPLICATE_CHECK')) {
+      ruleDuplicate = await this.evaluateDuplicateClaim(claim);
+      ruleEvaluations.push(applyConfig(ruleDuplicate, 'RULE_DUPLICATE_CHECK'));
+    }
 
     // 6. RULE: External Policy Verification Check
-    const ruleExternal = this.evaluateExternalPolicy(claim, policy);
-    ruleEvaluations.push(ruleExternal);
+    if (isRuleActive('RULE_EXTERNAL_POLICY_VERIFICATION')) {
+      const ruleExternal = this.evaluateExternalPolicy(claim, policy);
+      ruleEvaluations.push(applyConfig(ruleExternal, 'RULE_EXTERNAL_POLICY_VERIFICATION'));
+    }
 
     // 7. RULE: High-Value Surveyor Trigger
-    const ruleSurveyorTrigger = this.evaluateSurveyorRequirement(claim);
-    ruleEvaluations.push(ruleSurveyorTrigger);
+    if (isRuleActive('RULE_SURVEYOR_TRIGGER')) {
+      const ruleSurveyorTrigger = this.evaluateSurveyorRequirement(claim);
+      ruleEvaluations.push(applyConfig(ruleSurveyorTrigger, 'RULE_SURVEYOR_TRIGGER'));
+    }
 
     // Calculate overall status and health score
     let overallStatus = 'PASS';
@@ -68,7 +99,7 @@ class RuleEngineService {
       }
     }
 
-    const score = Math.round((passedCount / ruleEvaluations.length) * 100);
+    const score = ruleEvaluations.length > 0 ? Math.round((passedCount / ruleEvaluations.length) * 100) : 100;
 
     const result = {
       status: overallStatus,
@@ -80,7 +111,7 @@ class RuleEngineService {
     // Update claim automated validation and high value flag
     claim.automatedValidation = result;
     claim.isHighValueClaim = claim.requestedAmount >= 5000;
-    if (ruleDuplicate.status === 'FLAGGED' || ruleDuplicate.status === 'FAIL') {
+    if (ruleDuplicate && (ruleDuplicate.status === 'FLAGGED' || ruleDuplicate.status === 'FAIL')) {
       claim.isDuplicateWarning = true;
     }
     await claim.save();

@@ -4,11 +4,19 @@ import bcrypt from 'bcryptjs';
 
 export const listUsers = async (req, res, next) => {
   try {
-    const { role, isActive, search, page = 1, limit = 20 } = req.query;
+    const { role, isActive, search, page = 1, limit = 50 } = req.query;
     const query = {};
 
-    if (role) query.role = role;
-    if (isActive !== undefined) query.isActive = isActive === 'true';
+    // Role-based scoping:
+    // Non-ADMIN staff roles (e.g. OFFICER, MANAGER) are permitted to query active staff/surveyors for assignment
+    if (req.user.role !== 'ADMIN') {
+      query.role = role || 'SURVEYOR';
+      query.isActive = true;
+    } else {
+      if (role) query.role = role;
+      if (isActive !== undefined) query.isActive = isActive === 'true';
+    }
+
     if (search) {
       query.$or = [
         { name: { $regex: search, $options: 'i' } },
@@ -17,19 +25,31 @@ export const listUsers = async (req, res, next) => {
       ];
     }
 
-    const skip = (parseInt(page, 10) - 1) * parseInt(limit, 10);
+    const parsedLimit = Math.min(parseInt(limit, 10) || 50, 100);
+    const skip = (parseInt(page, 10) - 1) * parsedLimit;
     const [users, total] = await Promise.all([
-      User.find(query).sort({ createdAt: -1 }).skip(skip).limit(parseInt(limit, 10)),
+      User.find(query)
+        .select('_id name email role department phone isActive createdAt')
+        .sort({ name: 1 })
+        .skip(skip)
+        .limit(parsedLimit)
+        .lean(),
       User.countDocuments(query),
     ]);
 
+    // Ensure status property is available for components expecting either isActive or status
+    const formattedUsers = users.map((u) => ({
+      ...u,
+      status: u.isActive ? 'ACTIVE' : 'INACTIVE',
+    }));
+
     res.json({
       success: true,
-      data: users,
+      data: formattedUsers,
       pagination: {
         total,
         page: parseInt(page, 10),
-        pages: Math.ceil(total / parseInt(limit, 10)),
+        pages: Math.ceil(total / parsedLimit),
       },
     });
   } catch (error) {

@@ -17,6 +17,7 @@ import {
   ShieldAlert,
   HelpCircle,
   Edit3,
+  RefreshCw,
 } from 'lucide-react';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
@@ -38,9 +39,12 @@ export const OfficerClaimWorkspace = () => {
   const [claimData, setClaimData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [surveyors, setSurveyors] = useState([]);
+  const [surveyorsLoading, setSurveyorsLoading] = useState(false);
+  const [surveyorsError, setSurveyorsError] = useState(null);
 
   // Modal States
   const [selectedOcrJob, setSelectedOcrJob] = useState(null);
+  const [selectedDocument, setSelectedDocument] = useState(null);
   const [isOcrModalOpen, setIsOcrModalOpen] = useState(false);
   const [isSurveyorModalOpen, setIsSurveyorModalOpen] = useState(false);
   const [isRequestDocsModalOpen, setIsRequestDocsModalOpen] = useState(false);
@@ -73,13 +77,32 @@ export const OfficerClaimWorkspace = () => {
 
   const fetchSurveyors = async () => {
     try {
-      const res = await api.get('/users?role=SURVEYOR');
-      if (res.data.success) {
-        setSurveyors(res.data.data);
-        if (res.data.data.length > 0) setSurveyorId(res.data.data[0]._id);
+      setSurveyorsLoading(true);
+      setSurveyorsError(null);
+      const res = await api.get('/users?role=SURVEYOR&isActive=true&limit=100');
+      if (res.data?.success && Array.isArray(res.data.data)) {
+        const activeSurveyors = res.data.data;
+        setSurveyors(activeSurveyors);
+        if (activeSurveyors.length > 0) {
+          setSurveyorId((prev) => {
+            const exists = activeSurveyors.some((s) => s._id === prev);
+            return exists ? prev : activeSurveyors[0]._id;
+          });
+        } else {
+          setSurveyorId('');
+        }
+      } else {
+        setSurveyors([]);
+        setSurveyorId('');
       }
     } catch (err) {
       console.error('Failed to load surveyors', err);
+      const msg = err.response?.data?.message || 'Unable to retrieve certified surveyors from server.';
+      setSurveyorsError(msg);
+      setSurveyors([]);
+      setSurveyorId('');
+    } finally {
+      setSurveyorsLoading(false);
     }
   };
 
@@ -92,7 +115,7 @@ export const OfficerClaimWorkspace = () => {
   const handleAssignSurveyor = async (e) => {
     e.preventDefault();
     if (!surveyorId) {
-      showToast('Please select a surveyor.', 'error');
+      showToast('Please select an eligible certified surveyor.', 'error');
       return;
     }
     try {
@@ -105,6 +128,7 @@ export const OfficerClaimWorkspace = () => {
       if (res.data.success) {
         showToast('Surveyor assigned and task queued for inspection.', 'success');
         setIsSurveyorModalOpen(false);
+        setSurveyorInstructions('');
         fetchClaimDetails();
       }
     } catch (err) {
@@ -197,8 +221,11 @@ export const OfficerClaimWorkspace = () => {
               Request Documents
             </button>
             <button
-              onClick={() => setIsSurveyorModalOpen(true)}
-              className="px-3 py-1.5 rounded-lg border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-semibold transition"
+              onClick={() => {
+                setIsSurveyorModalOpen(true);
+                fetchSurveyors();
+              }}
+              className="px-3 py-1.5 rounded-lg border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-semibold transition cursor-pointer"
             >
               Assign Surveyor
             </button>
@@ -375,6 +402,7 @@ export const OfficerClaimWorkspace = () => {
                           type="button"
                           onClick={() => {
                             setSelectedOcrJob(ocrJob);
+                            setSelectedDocument(doc);
                             setIsOcrModalOpen(true);
                           }}
                           className="px-3 py-1.5 rounded-lg bg-teal-50 hover:bg-teal-100 border border-teal-200 text-teal-800 text-xs font-semibold flex items-center gap-1.5 transition"
@@ -395,7 +423,11 @@ export const OfficerClaimWorkspace = () => {
                       <div>
                         <span className="text-slate-400 block text-[10px] uppercase">Detected Amount</span>
                         <span className="font-bold text-[#101A38]">
-                          {formatINR(ocrJob.extractedFields?.detectedAmount || 0)}
+                          {ocrJob.extractedFields?.detectedAmount != null ? (
+                            formatINR(ocrJob.extractedFields.detectedAmount)
+                          ) : (
+                            <span className="text-slate-400 font-normal italic">Not detected</span>
+                          )}
                         </span>
                       </div>
                       <div>
@@ -477,6 +509,7 @@ export const OfficerClaimWorkspace = () => {
           onClose={() => setIsOcrModalOpen(false)}
           ocrJob={selectedOcrJob}
           claim={claim}
+          document={selectedDocument}
           onUpdated={fetchClaimDetails}
         />
       )}
@@ -489,29 +522,85 @@ export const OfficerClaimWorkspace = () => {
       >
         <form onSubmit={handleAssignSurveyor} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">Select Certified Surveyor</label>
-            <select
-              value={surveyorId}
-              onChange={(e) => setSurveyorId(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white"
-              required
-            >
-              {surveyors.map((s) => (
-                <option key={s._id} value={s._id}>
-                  {s.name} ({s.email}) - {s.department}
-                </option>
-              ))}
-            </select>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700">
+                Select Certified Surveyor <span className="text-rose-500">*</span>
+              </label>
+              {surveyorsLoading && (
+                <span className="flex items-center gap-1 text-[11px] text-purple-600 font-medium">
+                  <RefreshCw className="w-3 h-3 animate-spin" /> Loading surveyors...
+                </span>
+              )}
+            </div>
+
+            {surveyorsLoading ? (
+              <div className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-500 flex items-center justify-between">
+                <span>Fetching eligible certified surveyors...</span>
+                <RefreshCw className="w-3.5 h-3.5 animate-spin text-purple-600" />
+              </div>
+            ) : surveyorsError ? (
+              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 space-y-2">
+                <div className="flex items-start gap-2">
+                  <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold">{surveyorsError}</p>
+                    <p className="text-[11px] text-rose-600 mt-0.5">Could not retrieve the certified technical surveyors list.</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={fetchSurveyors}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-semibold transition cursor-pointer"
+                >
+                  <RefreshCw className="w-3 h-3" /> Retry Loading
+                </button>
+              </div>
+            ) : surveyors.length === 0 ? (
+              <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800 space-y-2">
+                <div className="flex items-start gap-2">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold">No Active Certified Surveyors Available</p>
+                    <p className="text-[11px] text-amber-700 mt-0.5">
+                      There are currently no active surveyor staff accounts registered in the database.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={fetchSurveyors}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-semibold transition cursor-pointer"
+                >
+                  <RefreshCw className="w-3 h-3" /> Refresh List
+                </button>
+              </div>
+            ) : (
+              <select
+                value={surveyorId}
+                onChange={(e) => setSurveyorId(e.target.value)}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs bg-white text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition shadow-xs cursor-pointer"
+                required
+              >
+                <option value="" disabled>-- Select Certified Technical Surveyor --</option>
+                {surveyors.map((s) => (
+                  <option key={s._id} value={s._id}>
+                    {s.name} ({s.email}) — {s.department || 'Technical Field Inspection'}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">Inspection Instructions</label>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Inspection Instructions
+            </label>
             <textarea
               rows={3}
               value={surveyorInstructions}
               onChange={(e) => setSurveyorInstructions(e.target.value)}
               placeholder="e.g. Verify vehicular damage to bumper and undercarriage; verify salvage estimate."
-              className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs bg-white text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition shadow-xs"
             />
           </div>
 
@@ -519,16 +608,23 @@ export const OfficerClaimWorkspace = () => {
             <button
               type="button"
               onClick={() => setIsSurveyorModalOpen(false)}
-              className="px-3 py-1.5 rounded-lg border border-[#D9E1FA] text-slate-600 text-xs font-semibold"
+              className="px-3.5 py-2 rounded-xl border border-[#D9E1FA] hover:bg-slate-50 text-slate-600 text-xs font-semibold transition cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
-              disabled={submittingAction}
-              className="px-4 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-xs"
+              disabled={submittingAction || surveyorsLoading || !surveyorId || surveyors.length === 0}
+              className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 disabled:bg-purple-300 disabled:cursor-not-allowed text-white text-xs font-bold transition shadow-xs flex items-center gap-1.5 cursor-pointer"
             >
-              {submittingAction ? 'Assigning...' : 'Confirm Assignment'}
+              {submittingAction ? (
+                <>
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  <span>Assigning...</span>
+                </>
+              ) : (
+                'Confirm Assignment'
+              )}
             </button>
           </div>
         </form>

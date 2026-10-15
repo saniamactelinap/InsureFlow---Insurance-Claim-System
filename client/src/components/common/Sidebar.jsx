@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
   ShieldCheck,
@@ -19,9 +19,20 @@ import { useAuth } from '../../context/AuthContext';
 
 export const Sidebar = () => {
   const { user } = useAuth();
+  const location = useLocation();
   if (!user) return null;
 
   const role = user.role;
+  const currentPath = location.pathname.replace(/\/+$/, '') || '/';
+
+  const isLinkActive = (to) => {
+    const normalizedTo = to.replace(/\/+$/, '') || '/';
+    if (currentPath === normalizedTo) return true;
+    if (normalizedTo === '/customer/claims' && currentPath === '/customer/claims/history') {
+      return true;
+    }
+    return false;
+  };
 
   const getLinks = () => {
     switch (role) {
@@ -87,11 +98,14 @@ export const Sidebar = () => {
       <nav className="p-3 space-y-1.5 flex-1">
         {links.map((link) => {
           const Icon = link.icon;
+          const isActive = isLinkActive(link.to);
           return (
             <NavLink
               key={link.to}
               to={link.to}
-              className={({ isActive }) =>
+              end
+              aria-current={isActive ? 'page' : undefined}
+              className={() =>
                 `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition ${
                   isActive
                     ? 'bg-[#0000FF] text-white font-semibold shadow-md shadow-blue-800/40'

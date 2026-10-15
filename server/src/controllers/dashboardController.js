@@ -4,11 +4,183 @@ import { User } from '../models/User.js';
 import { Settlement } from '../models/Settlement.js';
 import { SurveyAssignment } from '../models/SurveyAssignment.js';
 import { OCRJob } from '../models/OCRJob.js';
+import { PolicyProduct } from '../models/PolicyProduct.js';
+import { ConfigurableRule } from '../models/ConfigurableRule.js';
+
+export const getManagerDashboard = async (req, res, next) => {
+  try {
+    const [
+      pendingReviewCount,
+      approvedCount,
+      pendingSettlementClaimsCount,
+      rejectedCount,
+      totalClaimsCount,
+      settlements,
+      categoryBreakdown,
+      pendingClaims,
+    ] = await Promise.all([
+      // Awaiting Manager Review
+      Claim.countDocuments({ status: 'MANAGER_REVIEW' }),
+      // Approved Claims
+      Claim.countDocuments({
+        status: { $in: ['APPROVED', 'SETTLEMENT_PENDING', 'SETTLEMENT_PROCESSING', 'SETTLED', 'CLOSED'] },
+      }),
+      // Pending Settlements: Claims in settlement pipeline
+      Claim.countDocuments({
+        status: { $in: ['APPROVED', 'SETTLEMENT_PENDING', 'SETTLEMENT_PROCESSING'] },
+      }),
+      // Rejected Claims
+      Claim.countDocuments({ status: 'REJECTED' }),
+      // Total Claims
+      Claim.countDocuments(),
+      // Settlements for cumulative approved value
+      Settlement.find().select('approvedAmount status').lean(),
+      // Claims volume breakdown by insurance category
+      Claim.aggregate([
+        {
+          $group: {
+            _id: '$category',
+            count: { $sum: 1 },
+          },
+        },
+        { $sort: { count: -1 } },
+      ]),
+      // Urgent / escalated claims awaiting managerial decision
+      Claim.find({ status: 'MANAGER_REVIEW' })
+        .populate('customer', 'name email phone')
+        .populate('customerPolicy', 'policyNumber insurerName category')
+        .sort({ isHighValueClaim: -1, requestedAmount: -1, createdAt: -1 })
+        .limit(10)
+        .lean(),
+    ]);
+
+    const totalApprovedAmount = settlements.reduce((sum, s) => sum + (s.approvedAmount || 0), 0);
+
+    const formattedPendingClaims = pendingClaims.map((claim) => ({
+      ...claim,
+      claimNumber: claim.claimReference || claim.claimNumber || `CLM-${claim._id.toString().slice(-6)}`,
+      insuranceCategory: claim.category || claim.insuranceCategory || 'GENERAL',
+    }));
+
+    const responsePayload = {
+      role: 'MANAGER',
+      counts: {
+        pendingReview: pendingReviewCount,
+        approved: approvedCount,
+        pendingSettlements: pendingSettlementClaimsCount,
+        rejected: rejectedCount,
+        total: totalClaimsCount,
+      },
+      exposure: {
+        totalApprovedAmount,
+      },
+      categoryBreakdown: categoryBreakdown || [],
+      pendingClaims: formattedPendingClaims,
+      // Legacy flat fields for backwards compatibility
+      pendingDecisions: pendingReviewCount,
+      approvedCount,
+      rejectedCount,
+      totalApprovedValue: totalApprovedAmount,
+    };
+
+    return res.json({
+      success: true,
+      data: responsePayload,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAdminDashboard = async (req, res, next) => {
+  try {
+    const [
+      usersTotal,
+      usersByRole,
+      policiesPlatform,
+      policiesExternal,
+      claimsTotal,
+      claimsByCategory,
+      ocrJobsTotal,
+      ocrJobsSuccess,
+      settlementsTotal,
+      settlementsCount,
+      productsCount,
+      rulesActiveCount,
+      rulesTotalCount,
+    ] = await Promise.all([
+      User.countDocuments(),
+      User.aggregate([{ $group: { _id: '$role', count: { $sum: 1 } } }]),
+      CustomerPolicy.countDocuments({ policySource: 'PLATFORM' }),
+      CustomerPolicy.countDocuments({ policySource: 'EXTERNAL' }),
+      Claim.countDocuments(),
+      Claim.aggregate([{ $group: { _id: '$category', count: { $sum: 1 } } }]),
+      OCRJob.countDocuments(),
+      OCRJob.countDocuments({ status: 'COMPLETED' }),
+      Settlement.aggregate([
+        {
+          $group: {
+            _id: '$status',
+            totalAmount: { $sum: '$approvedAmount' },
+            count: { $sum: 1 },
+          },
+        },
+      ]),
+      Settlement.countDocuments(),
+      PolicyProduct.countDocuments(),
+      ConfigurableRule.countDocuments({ isEnabled: true }),
+      ConfigurableRule.countDocuments(),
+    ]);
+
+    const ocrSuccessRate = ocrJobsTotal > 0 ? Math.round((ocrJobsSuccess / ocrJobsTotal) * 100) : 100;
+
+    return res.json({
+      success: true,
+      data: {
+        role: 'ADMIN',
+        counts: {
+          users: usersTotal,
+          claims: claimsTotal,
+          products: productsCount,
+          settlements: settlementsCount,
+          rules: rulesActiveCount,
+          rulesTotal: rulesTotalCount,
+        },
+        usersTotal,
+        usersByRole,
+        policiesPlatform,
+        policiesExternal,
+        claimsTotal,
+        claimsByCategory,
+        categoryBreakdown: claimsByCategory,
+        ocrJobsTotal,
+        ocrSuccessRate,
+        settlementsTotal,
+        systemHealth: {
+          database: 'CONNECTED',
+          ocrEngine: 'TESSERACT_ONLINE',
+          ruleEngine: 'ACTIVE',
+          authProvider: 'JWT_SECURE',
+        },
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const getDashboardStats = async (req, res, next) => {
   try {
     const { role } = req.user;
     const userId = req.user._id;
+
+    if (role === 'MANAGER') {
+      return getManagerDashboard(req, res, next);
+    }
+
+    if (role === 'ADMIN') {
+      return getAdminDashboard(req, res, next);
+    }
 
     if (role === 'CUSTOMER') {
       const [
@@ -158,109 +330,7 @@ export const getDashboardStats = async (req, res, next) => {
       });
     }
 
-    if (role === 'MANAGER') {
-      const [
-        pendingDecisions,
-        surveyReportsReady,
-        highValueClaims,
-        allClaims,
-        settlements,
-      ] = await Promise.all([
-        Claim.countDocuments({ status: 'MANAGER_REVIEW' }),
-        Claim.countDocuments({ status: 'SURVEY_REPORT_SUBMITTED' }),
-        Claim.countDocuments({ isHighValueClaim: true, status: { $nin: ['SETTLED', 'CLOSED', 'REJECTED'] } }),
-        Claim.find(),
-        Settlement.find(),
-      ]);
-
-      const approvedCount = allClaims.filter(c =>
-        ['APPROVED', 'SETTLEMENT_PENDING', 'SETTLEMENT_PROCESSING', 'SETTLED', 'CLOSED'].includes(c.status)
-      ).length;
-      const rejectedCount = allClaims.filter(c => c.status === 'REJECTED').length;
-
-      const totalApprovedValue = settlements.reduce((sum, s) => sum + s.approvedAmount, 0);
-
-      // Average processing duration in days from submittedAt to settledAt/approvedAt
-      const resolvedClaims = allClaims.filter(c => c.settledAt || c.closedAt);
-      let avgDays = 2.4;
-      if (resolvedClaims.length > 0) {
-        const totalDuration = resolvedClaims.reduce((sum, c) => {
-          const start = new Date(c.submittedAt || c.createdAt).getTime();
-          const end = new Date(c.settledAt || c.closedAt || c.updatedAt).getTime();
-          return sum + (end - start);
-        }, 0);
-        avgDays = Number((totalDuration / (resolvedClaims.length * 86400000)).toFixed(1));
-      }
-
-      return res.json({
-        success: true,
-        data: {
-          role: 'MANAGER',
-          pendingDecisions,
-          surveyReportsReady,
-          highValueClaims,
-          approvedCount,
-          rejectedCount,
-          totalApprovedValue,
-          avgProcessingDays: avgDays,
-        },
-      });
-    }
-
-    // Role === 'ADMIN'
-    const [
-      usersTotal,
-      usersByRole,
-      policiesPlatform,
-      policiesExternal,
-      claimsTotal,
-      claimsByCategory,
-      ocrJobsTotal,
-      ocrJobsSuccess,
-      settlementsTotal,
-    ] = await Promise.all([
-      User.countDocuments(),
-      User.aggregate([{ $group: { _id: '$role', count: { $sum: 1 } } }]),
-      CustomerPolicy.countDocuments({ policySource: 'PLATFORM' }),
-      CustomerPolicy.countDocuments({ policySource: 'EXTERNAL' }),
-      Claim.countDocuments(),
-      Claim.aggregate([{ $group: { _id: '$category', count: { $sum: 1 } } }]),
-      OCRJob.countDocuments(),
-      OCRJob.countDocuments({ status: 'COMPLETED' }),
-      Settlement.aggregate([
-        {
-          $group: {
-            _id: '$status',
-            totalAmount: { $sum: '$approvedAmount' },
-            count: { $sum: 1 },
-          },
-        },
-      ]),
-    ]);
-
-    const ocrSuccessRate = ocrJobsTotal > 0 ? Math.round((ocrJobsSuccess / ocrJobsTotal) * 100) : 100;
-
-    return res.json({
-      success: true,
-      data: {
-        role: 'ADMIN',
-        usersTotal,
-        usersByRole,
-        policiesPlatform,
-        policiesExternal,
-        claimsTotal,
-        claimsByCategory,
-        ocrJobsTotal,
-        ocrSuccessRate,
-        settlementsTotal,
-        systemHealth: {
-          database: 'CONNECTED',
-          ocrEngine: 'TESSERACT_ONLINE',
-          ruleEngine: 'ACTIVE',
-          authProvider: 'JWT_SECURE',
-        },
-      },
-    });
+    return res.status(400).json({ success: false, message: 'Invalid user role' });
   } catch (error) {
     next(error);
   }

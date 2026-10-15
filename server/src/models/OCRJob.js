@@ -14,12 +14,21 @@ const ocrJobSchema = new mongoose.Schema({
   },
   provider: {
     type: String,
-    enum: ['tesseract', 'cloud_vision', 'simulated_fallback', 'pdf_parse', 'scanned_pdf_ocr', 'unknown'],
+    enum: [
+      'tesseract',
+      'gemini_vision',
+      'hybrid',
+      'cloud_vision',
+      'simulated_fallback',
+      'pdf_parse',
+      'scanned_pdf_ocr',
+      'unknown'
+    ],
     default: 'tesseract',
   },
   status: {
     type: String,
-    enum: ['PENDING', 'PROCESSING', 'COMPLETED', 'FAILED'],
+    enum: ['PENDING', 'PROCESSING', 'COMPLETED', 'PARTIAL', 'NEEDS_REVIEW', 'FAILED'],
     default: 'PENDING',
     index: true,
   },
@@ -46,6 +55,36 @@ const ocrJobSchema = new mongoose.Schema({
     enum: ['VERIFIED', 'NEEDS_MANUAL_REVIEW'],
     default: 'NEEDS_MANUAL_REVIEW',
   },
+  documentType: {
+    type: String,
+    default: 'general_document',
+  },
+  handwritingDetected: {
+    type: Boolean,
+    default: false,
+  },
+  candidateReadings: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {},
+  },
+  fieldMetadata: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {},
+  },
+  engineComparison: {
+    tesseract: { type: mongoose.Schema.Types.Mixed, default: null },
+    gemini: { type: mongoose.Schema.Types.Mixed, default: null },
+    disagreements: { type: [String], default: [] },
+    agreementScore: { type: Number, default: 100 },
+  },
+  discrepancy: {
+    hasDiscrepancy: { type: Boolean, default: false },
+    claimAmount: { type: Number, default: null },
+    detectedAmount: { type: Number, default: null },
+    variance: { type: Number, default: null },
+    status: { type: String, default: 'NO_DISCREPANCY' },
+    explanation: { type: String, default: '' },
+  },
   rawText: {
     type: String,
     default: '',
@@ -66,10 +105,13 @@ const ocrJobSchema = new mongoose.Schema({
     invoiceDate: { type: String, default: null },
     admissionDate: { type: String, default: null },
     dischargeDate: { type: String, default: null },
+    incidentOrServiceDate: { type: String, default: null },
     totalAmount: { type: Number, default: null },
     subtotal: { type: Number, default: null },
     taxAmount: { type: Number, default: null },
     discountAmount: { type: Number, default: null },
+    currency: { type: String, default: 'INR' },
+    vehicleRegistrationNumber: { type: String, default: null },
     paymentStatus: { type: String, default: null },
     diagnosis: { type: String, default: null },
     lineItems: { type: [mongoose.Schema.Types.Mixed], default: [] },
@@ -100,7 +142,11 @@ const ocrJobSchema = new mongoose.Schema({
   processingDurationMs: {
     type: Number,
     default: 0,
-  }
+  },
+  sourcePagesCount: {
+    type: Number,
+    default: 1,
+  },
 }, {
   timestamps: true,
 });
