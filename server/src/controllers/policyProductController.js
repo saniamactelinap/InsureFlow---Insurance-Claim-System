@@ -70,6 +70,13 @@ export const compareProducts = async (req, res, next) => {
       });
     }
 
+    if (uniqueTokens.length > 4) {
+      return res.status(400).json({
+        success: false,
+        message: 'A maximum of 4 policies can be compared simultaneously.',
+      });
+    }
+
     const validObjectIds = uniqueTokens.filter((token) => mongoose.Types.ObjectId.isValid(token));
     const orConditions = [];
 
@@ -83,6 +90,13 @@ export const compareProducts = async (req, res, next) => {
       isPublished: true,
       $or: orConditions,
     });
+
+    if (products.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'The requested policy products could not be found or have been unpublished from the catalog.',
+      });
+    }
 
     // Sort into the exact order requested by uniqueTokens
     products.sort((a, b) => {
@@ -99,6 +113,7 @@ export const compareProducts = async (req, res, next) => {
       success: true,
       count: products.length,
       requestedCount: uniqueTokens.length,
+      missingCount: Math.max(0, uniqueTokens.length - products.length),
       data: products,
     });
   } catch (error) {
