@@ -8,11 +8,13 @@ import {
 import { Navbar } from '../../components/common/Navbar';
 import { Footer } from '../../components/common/Footer';
 import api from '../../services/api';
+import { useToast } from '../../context/ToastContext';
 import { formatINR } from '../../utils/currency';
 
 export function PoliciesCatalog() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +24,27 @@ export function PoliciesCatalog() {
   const [selectedCategory, setSelectedCategory] = useState(initialCat);
   const [searchQuery, setSearchQuery] = useState('');
   const [maxPremium, setMaxPremium] = useState(25000);
-  const [compareIds, setCompareIds] = useState([]);
+  
+  const [compareIds, setCompareIds] = useState(() => {
+    try {
+      const stored = localStorage.getItem('insureflow_compare_ids');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch (e) {
+      console.warn('Could not read stored compareIds', e);
+    }
+    return [];
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('insureflow_compare_ids', JSON.stringify(compareIds));
+    } catch (e) {
+      console.warn('Could not save compareIds to localStorage', e);
+    }
+  }, [compareIds]);
 
   useEffect(() => {
     fetchProducts();
@@ -65,7 +87,7 @@ export function PoliciesCatalog() {
       setCompareIds(compareIds.filter((item) => item !== id));
     } else {
       if (compareIds.length >= 4) {
-        alert('You can compare up to 4 policies simultaneously.');
+        showToast('You can compare up to 4 policies simultaneously.', 'info');
         return;
       }
       setCompareIds([...compareIds, id]);
