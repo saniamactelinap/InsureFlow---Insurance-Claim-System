@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Mail, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { Mail, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 import { Navbar } from '../../components/common/Navbar';
 import { Footer } from '../../components/common/Footer';
+import { Logo } from '../../components/common/Logo';
 
 export const ForgotPassword = () => {
   const { showToast } = useToast();
@@ -33,8 +34,8 @@ export const ForgotPassword = () => {
       <div className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8 bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-xl">
           <div className="text-center">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-teal-400 text-white flex items-center justify-center mx-auto mb-3 shadow-md shadow-blue-500/20">
-              <Shield className="w-6 h-6" />
+            <div className="flex justify-center mb-3">
+              <Logo variant="icon" theme="light" size="lg" to="/" withText={false} />
             </div>
             <h1 className="text-2xl font-black text-slate-900 tracking-tight">Account Recovery</h1>
             <p className="text-xs text-slate-500 mt-1">

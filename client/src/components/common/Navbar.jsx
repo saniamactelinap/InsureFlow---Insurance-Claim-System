@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Shield, Bell, LogOut, LayoutDashboard, ChevronDown } from 'lucide-react';
+import { Bell, LogOut, LayoutDashboard, ChevronDown } from 'lucide-react';
 import { useAuth, getRoleDashboardPath } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
+import { Logo } from './Logo';
 
 export const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -39,19 +40,7 @@ export const Navbar = () => {
     <header className="sticky top-0 z-50 bg-[#020950]/95 backdrop-blur-md border-b border-[#060A8A] text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand Logo */}
-        <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0000FF] to-[#090DC2] text-white flex items-center justify-center shadow-lg shadow-blue-900/40 group-hover:scale-105 transition duration-200">
-            <Shield className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <span className="font-extrabold text-lg tracking-tight text-white flex items-center">
-              Insure<span className="text-[#0000FF] ml-0.5">Flow</span>
-            </span>
-            <span className="block text-[10px] uppercase tracking-wider text-[#8FA4E8] font-semibold -mt-1">
-              Claims & Settlements
-            </span>
-          </div>
-        </Link>
+        <Logo variant="icon" theme="dark" size="md" to="/" />
 
         {/* Desktop Nav Links */}
         <nav className="hidden md:flex items-center gap-1 text-xs font-semibold text-slate-300">

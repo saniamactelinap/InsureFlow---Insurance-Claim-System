@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Lock, PhoneCall, CheckCircle } from 'lucide-react';
+import { Lock, PhoneCall, CheckCircle } from 'lucide-react';
+import { Logo } from './Logo';
 
 export const Footer = () => {
   return (
@@ -9,12 +10,7 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Col 1 */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2.5 text-white font-bold text-base">
-              <div className="w-8 h-8 rounded-xl bg-[#0000FF] flex items-center justify-center text-white shadow-md shadow-blue-900/40">
-                <Shield className="w-4 h-4" />
-              </div>
-              <span>Insure<span className="text-[#0000FF]">Flow</span></span>
-            </div>
+            <Logo variant="icon" theme="dark" size="md" to="/" />
             <p className="text-slate-400 leading-relaxed text-xs">
               Smart Insurance Claim Processing and Settlement Management System. Delivering connected coverage, transparent automated validation, and verified human review at every critical adjudication milestone.
             </p>

@@ -183,9 +183,11 @@ export const Home = () => {
                     {/* Bottom overlay badge inside main photo */}
                     <div className="absolute bottom-4 left-4 right-4 p-3.5 rounded-xl bg-[#020950]/85 backdrop-blur-md border border-[#060A8A] flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-[#0000FF] flex items-center justify-center text-white shadow-md shadow-blue-900/50">
-                          <Shield className="w-4 h-4" />
-                        </div>
+                        <img
+                          src="/images/insureflow-icon-transparent.png"
+                          alt="InsureFlow Protection"
+                          className="w-8 h-8 object-contain"
+                        />
                         <div>
                           <div className="text-xs font-bold text-white font-heading">Connected Protection Model</div>
                           <div className="text-[10px] text-slate-300">Continuous coverage across health, vehicle, and property</div>

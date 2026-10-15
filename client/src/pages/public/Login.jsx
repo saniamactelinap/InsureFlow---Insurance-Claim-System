@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Shield, Lock, Mail, ArrowRight } from 'lucide-react';
+import { Lock, Mail, ArrowRight } from 'lucide-react';
 import { useAuth, getRoleDashboardPath } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { Navbar } from '../../components/common/Navbar';
 import { Footer } from '../../components/common/Footer';
+import { Logo } from '../../components/common/Logo';
 
 export const Login = () => {
   const navigate = useNavigate();
@@ -49,8 +50,8 @@ export const Login = () => {
       <div className="flex-1 flex items-center justify-center py-14 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-7 bg-white p-8 sm:p-10 rounded-3xl border border-[#D9E1FA] shadow-xl">
           <div className="text-center">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#0000FF] to-[#090DC2] text-white flex items-center justify-center mx-auto mb-3 shadow-lg shadow-blue-800/30">
-              <Shield className="w-6 h-6" />
+            <div className="flex justify-center mb-3">
+              <Logo variant="icon" theme="light" size="lg" to="/" withText={false} />
             </div>
             <h1 className="text-2xl font-black text-[#020950] tracking-tight">Sign In to InsureFlow</h1>
             <p className="text-xs text-[#64708A] mt-1">

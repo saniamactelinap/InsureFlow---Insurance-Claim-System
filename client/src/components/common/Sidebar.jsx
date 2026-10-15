@@ -16,6 +16,7 @@ import {
   CalendarCheck,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { Logo } from './Logo';
 
 export const Sidebar = () => {
   const { user } = useAuth();
@@ -79,18 +80,21 @@ export const Sidebar = () => {
 
   return (
     <aside className="w-64 bg-[#020950] border-r border-[#060A8A] text-slate-300 flex flex-col min-h-screen">
-      {/* Role Badge Header */}
-      <div className="p-5 border-b border-[#060A8A] flex items-center justify-between">
-        <div>
-          <span className="text-xs font-bold text-[#8FA4E8] uppercase tracking-wider block">
-            {role} Portal
-          </span>
-          <span className="text-sm font-semibold text-white truncate block max-w-[170px]">
-            {user.name}
-          </span>
-        </div>
-        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#03096D] text-[#8FA4E8] border border-[#060A8A]">
+      {/* Brand Header */}
+      <div className="p-4 border-b border-[#060A8A] flex items-center justify-between">
+        <Logo variant="icon" theme="dark" size="sm" to="/" />
+        <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#03096D] text-[#8FA4E8] border border-[#060A8A]">
           v2.4
+        </span>
+      </div>
+
+      {/* Role Badge Subheader */}
+      <div className="px-4 py-3 border-b border-[#060A8A] bg-[#020738]/60">
+        <span className="text-[10px] font-bold text-[#8FA4E8] uppercase tracking-wider block">
+          {role} Portal
+        </span>
+        <span className="text-xs font-semibold text-white truncate block max-w-[200px]">
+          {user.name}
         </span>
       </div>
 
