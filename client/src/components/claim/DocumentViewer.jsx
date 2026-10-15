@@ -6,8 +6,14 @@ export const DocumentViewer = ({ document }) => {
 
   if (!document) return null;
 
-  const isPdf = document.mimeType === 'application/pdf' || document.fileName.toLowerCase().endsWith('.pdf');
-  const isImage = document.mimeType?.startsWith('image/') || /\.(jpg|jpeg|png|webp)$/i.test(document.fileName);
+  const isPdf =
+    document.mimeType === 'application/pdf' ||
+    document.fileName?.toLowerCase().endsWith('.pdf') ||
+    document.originalName?.toLowerCase().endsWith('.pdf') ||
+    document.fileUrl?.toLowerCase().endsWith('.pdf');
+  const isImage =
+    document.mimeType?.startsWith('image/') ||
+    /\.(jpg|jpeg|png|webp)$/i.test(document.fileName || document.originalName || document.fileUrl || '');
 
   return (
     <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm">

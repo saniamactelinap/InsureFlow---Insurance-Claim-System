@@ -1,0 +1,38 @@
+flowchart TD
+  classDef default fill:#ffffff,stroke:#000000,stroke-width:1.5px,color:#000000;
+  
+  START((Start)) --> A1[Fill Claim Form & Incident Details]
+  A1 --> A2[Upload Invoices & Medical Proofs]
+  A2 --> D1{Mandatory Docs Present?}
+
+  D1 -- No --> A3[Status: DOCUMENTS_REQUIRED]
+  A3 --> A2
+  
+  D1 -- Yes --> A4[Async OCR Extraction pdf-parse/Tesseract]
+  A4 --> A5[Evaluate 7 Rule Engine Checks]
+  A5 --> D2{Rule Score >= 70%?}
+
+  D2 -- Yes --> A6[Queue: Officer Low-Risk Review]
+  D2 -- No --> A7[Queue: Officer High-Risk Audit]
+
+  A6 --> A8[Officer Audits OCR Side-by-Side]
+  A7 --> A8
+  
+  A8 --> D3{Survey Required? Amount >= 5000?}
+
+  D3 -- Yes --> A9[Assign Surveyor: SURVEYOR_ASSIGNED]
+  A9 --> A10[Surveyor Submits Damage Report]
+  A10 --> A11[Officer Formulates Recommendation]
+
+  D3 -- No --> A11
+
+  A11 --> A12[Escalate to MANAGER_REVIEW]
+  A12 --> D4{Manager Decision?}
+
+  D4 -- Return --> A8
+  D4 -- Reject --> T1[Status: REJECTED] --> END1(((End)))
+  D4 -- Approve --> A13[Status: APPROVED]
+  A13 --> A14[Create Settlement Voucher SET-xxx]
+  A14 --> A15[Finance Disburses Bank Transfer]
+  A15 --> A16[Status: SETTLED]
+  A16 --> END2(((End)))

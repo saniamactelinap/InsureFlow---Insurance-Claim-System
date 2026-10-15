@@ -1,0 +1,97 @@
+@startuml 06_MongoDB_ERD
+!theme plain
+skinparam monochrome true
+skinparam defaultFontName "Consolas"
+
+title Figure 6: MongoDB Entity-Relationship Diagram (ERD) of InsureFlow
+
+entity "users" as User {
+  * _id: ObjectId [PK]
+  --
+  * name: String
+  * email: String [UNIQUE, INDEX]
+  * password: String (Hash)
+  * role: Enum
+  * isActive: Boolean
+}
+
+entity "policyproducts" as Product {
+  * _id: ObjectId [PK]
+  --
+  * productName: String
+  * insurer: String
+  * category: Enum
+  * planCode: String [UNIQUE, INDEX]
+  * coverageLimit: Number
+  * isPublished: Boolean
+}
+
+entity "customerpolicies" as CustPol {
+  * _id: ObjectId [PK]
+  --
+  * customer: Ref<User._id> [FK]
+  * product: Ref<PolicyProduct._id> [FK]
+  * policyNumber: String [UNIQUE, INDEX]
+  * coverageAmount: Number
+  * startDate: Date
+  * endDate: Date
+}
+
+entity "claims" as Claim {
+  * _id: ObjectId [PK]
+  --
+  * claimReference: String [UNIQUE, INDEX]
+  * customer: Ref<User._id> [FK]
+  * customerPolicy: Ref<CustomerPolicy._id> [FK]
+  * category: Enum
+  * requestedAmount: Number
+  * approvedAmount: Number
+  * status: Enum (15 States)
+}
+
+entity "claimdocuments" as Doc {
+  * _id: ObjectId [PK]
+  --
+  * claim: Ref<Claim._id> [FK]
+  * uploadedBy: Ref<User._id> [FK]
+  * documentCategory: Enum
+  * fileName: String (UUID)
+}
+
+entity "ocrjobs" as OCR {
+  * _id: ObjectId [PK]
+  --
+  * claimDocument: Ref<Doc._id> [FK]
+  * claim: Ref<Claim._id> [FK]
+  * extractedFields: Object
+  * confidenceScore: Number
+}
+
+entity "surveyreports" as Survey {
+  * _id: ObjectId [PK]
+  --
+  * claim: Ref<Claim._id> [FK]
+  * surveyor: Ref<User._id> [FK]
+  * damageAssessment: String
+  * estimatedRepairCost: Number
+}
+
+entity "settlements" as Sett {
+  * _id: ObjectId [PK]
+  --
+  * settlementReference: String [UNIQUE, INDEX]
+  * claim: Ref<Claim._id> [FK]
+  * customer: Ref<User._id> [FK]
+  * approvedAmount: Number
+  * status: Enum
+}
+
+User ||..o{ CustPol : "customer"
+Product ||..o{ CustPol : "product"
+CustPol ||..o{ Claim : "customerPolicy"
+User ||..o{ Claim : "customer"
+Claim ||..|{ Doc : "claim"
+Doc ||..|| OCR : "claimDocument"
+Claim ||..o| Survey : "claim"
+Claim ||..o| Sett : "claim"
+@enduml

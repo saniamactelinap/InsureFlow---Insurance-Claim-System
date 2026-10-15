@@ -1,0 +1,83 @@
+classDiagram
+  class User {
+    +ObjectId _id
+    +String name
+    +String email
+    +String password
+    +Enum role
+    +Boolean isActive
+    +comparePassword(pwd) Boolean
+  }
+
+  class PolicyProduct {
+    +ObjectId _id
+    +String productName
+    +String insurer
+    +Enum category
+    +String planCode
+    +Number coverageLimit
+    +Boolean isPublished
+  }
+
+  class CustomerPolicy {
+    +ObjectId _id
+    +Ref customer
+    +Ref product
+    +Enum policySource
+    +String policyNumber
+    +Date startDate
+    +Date endDate
+    +isCoveredOn(date) Boolean
+  }
+
+  class Claim {
+    +ObjectId _id
+    +String claimReference
+    +Ref customer
+    +Ref customerPolicy
+    +Number requestedAmount
+    +Number approvedAmount
+    +Enum status
+    +Boolean isHighValueClaim
+  }
+
+  class ClaimDocument {
+    +ObjectId _id
+    +Ref claim
+    +Enum documentCategory
+    +String fileName
+    +String mimeType
+  }
+
+  class OCRJob {
+    +ObjectId _id
+    +Ref claimDocument
+    +Enum status
+    +String extractedText
+    +Number confidenceScore
+  }
+
+  class SurveyReport {
+    +ObjectId _id
+    +Ref claim
+    +Ref surveyor
+    +String damageAssessment
+    +Number estimatedRepairCost
+    +Boolean isClaimValid
+  }
+
+  class Settlement {
+    +ObjectId _id
+    +String settlementReference
+    +Ref claim
+    +Number approvedAmount
+    +Enum status
+  }
+
+  User "1" --> "0..*" CustomerPolicy
+  PolicyProduct "1" --> "0..*" CustomerPolicy
+  CustomerPolicy "1" --> "0..*" Claim
+  Claim "1" --> "1..*" ClaimDocument
+  ClaimDocument "1" --> "1" OCRJob
+  Claim "1" --> "0..1" SurveyReport
+  Claim "1" --> "0..1" Settlement

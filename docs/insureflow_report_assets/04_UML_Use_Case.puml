@@ -1,0 +1,70 @@
+@startuml 04_UML_Use_Case
+!theme plain
+skinparam monochrome true
+skinparam defaultFontName "Segoe UI"
+skinparam packageStyle rectangle
+
+title Figure 4: UML Use-Case Diagram of InsureFlow
+
+actor Customer as Cust
+actor "Field Surveyor" as Surv
+actor "Insurance Officer" as Off
+actor "Claims Manager" as Mgr
+actor Administrator as Admin
+
+rectangle "InsureFlow System Boundary" {
+  (Browse & Compare Catalog) as UC1
+  (Register External Policy) as UC2
+  (Submit Digital Claim) as UC3
+  (Upload Supporting Invoices) as UC4
+  (Track Claim Timeline) as UC5
+  (View Settlement Voucher) as UC6
+
+  (Access Work Queue) as UC7
+  (Audit OCR Extracted Data) as UC8
+  (Evaluate Rule Compliance) as UC9
+  (Request Missing Docs / Assign Surveyor) as UC10
+  (Formulate Recommendation) as UC11
+  (Verify External Policies) as UC12
+
+  (Access Inspection Roster) as UC13
+  (Conduct Damage Inspection) as UC14
+  (Submit Survey Report) as UC15
+
+  (Review Escalated Claims) as UC16
+  (Execute Decision Approve/Reject) as UC17
+  (Authorize Settlement Payout) as UC18
+
+  (Manage Policy Catalog) as UC19
+  (Configure Rule Engine) as UC20
+  (Govern User Roles) as UC21
+  (Inspect System Audit Logs) as UC22
+}
+
+Cust --> UC1
+Cust --> UC2
+Cust --> UC3
+Cust --> UC4
+Cust --> UC5
+Cust --> UC6
+
+Surv --> UC13
+Surv --> UC14
+Surv --> UC15
+
+Off --> UC7
+Off --> UC8
+Off --> UC9
+Off --> UC10
+Off --> UC11
+Off --> UC12
+
+Mgr --> UC16
+Mgr --> UC17
+Mgr --> UC18
+
+Admin --> UC19
+Admin --> UC20
+Admin --> UC21
+Admin --> UC22
+@enduml

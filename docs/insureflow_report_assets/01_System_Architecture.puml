@@ -1,0 +1,52 @@
+@startuml 01_System_Architecture
+!theme plain
+skinparam monochrome true
+skinparam defaultFontName "Segoe UI"
+skinparam packageStyle rectangle
+
+title Figure 1: Four-Tier System Architecture of InsureFlow
+
+package "Tier 1: Client Presentation Tier (React 18 & Vite)" {
+  [Customer Portal\n(Browse, Apply, Claim, Status)] as CustApp
+  [Officer Workstation\n(Queue, OCR Audit, Rules)] as OffApp
+  [Surveyor Console\n(Roster, Damage Report)] as SurvApp
+  [Manager Adjudication\n(Escalations, Approval)] as MgrApp
+  [Admin Management\n(Catalog, Rules, Audit)] as AdminApp
+}
+
+package "Tier 2: API Gateway & Security (Node.js & Express)" {
+  [JWT & RBAC Middleware] as AuthGuard
+  [Multer Multipart Streamer\n(UUID Sanitizer, 10MB)] as UploadGuard
+  [Helmet, CORS & Error Handler] as SecGuard
+}
+
+package "Tier 3: Core Business Logic Services" {
+  [13 REST Controllers] as Controllers
+  [Deterministic Rule Engine\n(7 Automated Checks)] as RuleEngine
+  [Finite State Machine\n(15 Legal States)] as FSM
+  [OCR Processing Engine\n(pdf-parse + Tesseract.js)] as OCREngine
+  [Settlement & Notification] as Notify
+}
+
+package "Tier 4: Data Persistence & Storage" {
+  database "MongoDB Atlas\n(Primary Cloud Replica Set)" as Atlas
+  database "In-Memory MongoDB\n(mongodb-memory-server)" as MemDB
+  folder "Local Disk Storage\n(server/uploads/)" as LocalDisk
+}
+
+CustApp --> AuthGuard : HTTP / JSON (Bearer Token)
+OffApp --> AuthGuard
+SurvApp --> AuthGuard
+MgrApp --> AuthGuard
+AdminApp --> AuthGuard
+
+AuthGuard --> Controllers
+UploadGuard --> LocalDisk : Store PDFs / Images
+Controllers --> RuleEngine
+Controllers --> FSM
+Controllers --> OCREngine
+Controllers --> Notify
+
+Controllers --> Atlas : Mongoose ODM (14 Schemas)
+Controllers ..> MemDB : Automatic Fallback
+@enduml

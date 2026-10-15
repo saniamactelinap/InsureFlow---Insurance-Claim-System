@@ -1,0 +1,203 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="880" viewBox="0 0 1280 880">
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .title { font-family: 'Segoe UI', Arial, sans-serif; font-size: 20px; font-weight: bold; fill: #000000; text-anchor: middle; letter-spacing: 0.5px; }
+      .subtitle { font-family: 'Segoe UI', Arial, sans-serif; font-size: 12px; fill: #333333; text-anchor: middle; font-style: italic; }
+      .border { fill: none; stroke: #000000; stroke-width: 2; }
+      .tier-box { fill: #fafafa; stroke: #000000; stroke-width: 1.5; rx: 6; }
+      .tier-header { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; font-weight: bold; fill: #000000; }
+      .tier-tag { font-family: 'Consolas', monospace; font-size: 11px; fill: #444444; }
+      .comp-box { fill: #ffffff; stroke: #000000; stroke-width: 1.2; rx: 4; }
+      .comp-title { font-family: 'Segoe UI', Arial, sans-serif; font-size: 12px; font-weight: bold; fill: #000000; }
+      .comp-desc { font-family: 'Segoe UI', Arial, sans-serif; font-size: 10px; fill: #333333; }
+      .arrow { stroke: #000000; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+      .arrow-bidir { stroke: #000000; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); marker-start: url(#arrowstart); }
+      .flow-label { font-family: 'Consolas', monospace; font-size: 10px; fill: #000000; font-weight: bold; background: #ffffff; }
+    </style>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#000000" />
+    </marker>
+    <marker id="arrowstart" markerWidth="8" markerHeight="6" refX="1" refY="3" orient="auto">
+      <polygon points="8 0, 0 3, 8 6" fill="#000000" />
+    </marker>
+  </defs>
+
+  <!-- Canvas Background & Academic Border -->
+  <rect width="1280" height="880" class="bg" />
+  <rect x="15" y="15" width="1250" height="850" class="border" />
+
+  <!-- Diagram Titles -->
+  <text x="640" y="48" class="title">FIGURE 1: FOUR-TIER SYSTEM ARCHITECTURE OF INSUREFLOW</text>
+  <text x="640" y="68" class="subtitle">Complete Technical Architecture: Client Presentation, Express API Gateway, Core Microservices, and Persistent Data Storage</text>
+
+  <!-- TIER 1: CLIENT PRESENTATION TIER -->
+  <rect x="40" y="90" width="1200" height="150" class="tier-box" />
+  <text x="60" y="115" class="tier-header">TIER 1: CLIENT PRESENTATION TIER (Single Page Application — React 18 &amp; Vite 5.4)</text>
+  <text x="1050" y="115" class="tier-tag">&lt;&lt;Port 5173 / HTTPS&gt;&gt;</text>
+
+  <!-- Sub-boxes in Tier 1 -->
+  <g transform="translate(60, 130)">
+    <rect width="210" height="90" class="comp-box" />
+    <text x="15" y="24" class="comp-title">Customer Portal</text>
+    <text x="15" y="42" class="comp-desc">• Policy Catalog &amp; Comparison</text>
+    <text x="15" y="58" class="comp-desc">• FNOL Digital Claim Filing</text>
+    <text x="15" y="74" class="comp-desc">• Real-time Settlement Tracker</text>
+  </g>
+  <g transform="translate(290, 130)">
+    <rect width="210" height="90" class="comp-box" />
+    <text x="15" y="24" class="comp-title">Officer Workstation</text>
+    <text x="15" y="42" class="comp-desc">• Unassigned Claims Queue</text>
+    <text x="15" y="58" class="comp-desc">• Side-by-Side OCR Audit Modal</text>
+    <text x="15" y="74" class="comp-desc">• Compliance Rule Flag Review</text>
+  </g>
+  <g transform="translate(520, 130)">
+    <rect width="210" height="90" class="comp-box" />
+    <text x="15" y="24" class="comp-title">Surveyor Console</text>
+    <text x="15" y="42" class="comp-desc">• Field Inspection Task Roster</text>
+    <text x="15" y="58" class="comp-desc">• Damage Assessment Forms</text>
+    <text x="15" y="74" class="comp-desc">• Physical Photo Evidence Upload</text>
+  </g>
+  <g transform="translate(750, 130)">
+    <rect width="210" height="90" class="comp-box" />
+    <text x="15" y="24" class="comp-title">Manager Adjudication</text>
+    <text x="15" y="42" class="comp-desc">• Escalated Claims Roster</text>
+    <text x="15" y="58" class="comp-desc">• Executive Approval / Reject</text>
+    <text x="15" y="74" class="comp-desc">• Settlement Voucher Approval</text>
+  </g>
+  <g transform="translate(980, 130)">
+    <rect width="240" height="90" class="comp-box" />
+    <text x="15" y="24" class="comp-title">Admin Management</text>
+    <text x="15" y="42" class="comp-desc">• Underwriting Plan Publishing</text>
+    <text x="15" y="58" class="comp-desc">• Deterministic Rule Config</text>
+    <text x="15" y="74" class="comp-desc">• Audit Trail &amp; User RBAC</text>
+  </g>
+
+  <!-- Connectors Tier 1 -> Tier 2 -->
+  <line x1="640" y1="240" x2="640" y2="280" class="arrow-bidir" />
+  <rect x="520" y="250" width="240" height="20" fill="#ffffff" stroke="#000000" stroke-width="1" rx="3" />
+  <text x="640" y="264" font-family="Consolas" font-size="10px" font-weight="bold" fill="#000000" text-anchor="middle">RESTful API / HTTPS / JWT Interceptor</text>
+
+  <!-- TIER 2: API GATEWAY &amp; SECURITY MIDDLEWARE -->
+  <rect x="40" y="280" width="1200" height="130" class="tier-box" />
+  <text x="60" y="305" class="tier-header">TIER 2: API GATEWAY &amp; SECURITY MIDDLEWARE (Node.js v22 &amp; Express 4.21)</text>
+  <text x="1050" y="305" class="tier-tag">&lt;&lt;Port 5000 / HTTP REST&gt;&gt;</text>
+
+  <g transform="translate(60, 320)">
+    <rect width="260" height="75" class="comp-box" />
+    <text x="15" y="22" class="comp-title">Authentication &amp; RBAC</text>
+    <text x="15" y="40" class="comp-desc">• JWT Bearer Token Verification</text>
+    <text x="15" y="56" class="comp-desc">• Role Middleware (5 Discrete Roles)</text>
+  </g>
+  <g transform="translate(350, 320)">
+    <rect width="260" height="75" class="comp-box" />
+    <text x="15" y="22" class="comp-title">Security &amp; Sanitization</text>
+    <text x="15" y="40" class="comp-desc">• Helmet HTTP Header Hardening</text>
+    <text x="15" y="56" class="comp-desc">• CORS Policy Guard &amp; Input Escaping</text>
+  </g>
+  <g transform="translate(640, 320)">
+    <rect width="270" height="75" class="comp-box" />
+    <text x="15" y="22" class="comp-title">Multi-part Stream Ingestion</text>
+    <text x="15" y="40" class="comp-desc">• Multer 1.4.5 Disk Streaming</text>
+    <text x="15" y="56" class="comp-desc">• UUID v4 Sanitizer &amp; 10MB Threshold</text>
+  </g>
+  <g transform="translate(940, 320)">
+    <rect width="280" height="75" class="comp-box" />
+    <text x="15" y="22" class="comp-title">Error Handling &amp; Audit Logger</text>
+    <text x="15" y="40" class="comp-desc">• Centralized Exception Dispatcher</text>
+    <text x="15" y="56" class="comp-desc">• Immutable System Activity Log</text>
+  </g>
+
+  <!-- Connectors Tier 2 -> Tier 3 -->
+  <line x1="640" y1="410" x2="640" y2="450" class="arrow" />
+  <rect x="530" y="420" width="220" height="20" fill="#ffffff" stroke="#000000" stroke-width="1" rx="3" />
+  <text x="640" y="434" font-family="Consolas" font-size="10px" font-weight="bold" fill="#000000" text-anchor="middle">Internal Controller Dispatch</text>
+
+  <!-- TIER 3: CORE APPLICATION MICROSERVICES &amp; CONTROLLERS -->
+  <rect x="40" y="450" width="1200" height="190" class="tier-box" />
+  <text x="60" y="475" class="tier-header">TIER 3: CORE BUSINESS LOGIC &amp; MICROSERVICES (Express Controllers &amp; Automation Engines)</text>
+  <text x="1050" y="475" class="tier-tag">&lt;&lt;Service Layer&gt;&gt;</text>
+
+  <g transform="translate(60, 490)">
+    <rect width="210" height="135" class="comp-box" />
+    <text x="15" y="24" class="comp-title">REST Controllers (13)</text>
+    <text x="15" y="44" class="comp-desc">• authController.js</text>
+    <text x="15" y="60" class="comp-desc">• claimController.js</text>
+    <text x="15" y="76" class="comp-desc">• managerController.js</text>
+    <text x="15" y="92" class="comp-desc">• surveyController.js</text>
+    <text x="15" y="108" class="comp-desc">• settlementController.js</text>
+    <text x="15" y="124" class="comp-desc">• policyProductController.js</text>
+  </g>
+  <g transform="translate(290, 490)">
+    <rect width="210" height="135" class="comp-box" />
+    <text x="15" y="24" class="comp-title">Deterministic Rule Engine</text>
+    <text x="15" y="44" class="comp-desc">ruleEngineService.js</text>
+    <text x="15" y="64" class="comp-desc">• 7 Automated Validation Rules</text>
+    <text x="15" y="80" class="comp-desc">• Coverage Date Verification</text>
+    <text x="15" y="96" class="comp-desc">• Cap &amp; Deductible Math</text>
+    <text x="15" y="112" class="comp-desc">• Health Score Calculation</text>
+  </g>
+  <g transform="translate(520, 490)">
+    <rect width="210" height="135" class="comp-box" />
+    <text x="15" y="24" class="comp-title">Finite State Machine</text>
+    <text x="15" y="44" class="comp-desc">stateMachineService.js</text>
+    <text x="15" y="64" class="comp-desc">• 15 Lifecycle States</text>
+    <text x="15" y="80" class="comp-desc">• Role Guarded Transitions</text>
+    <text x="15" y="96" class="comp-desc">• Immutable Audit Trail Log</text>
+    <text x="15" y="112" class="comp-desc">• Legal Transition Matrix</text>
+  </g>
+  <g transform="translate(750, 490)">
+    <rect width="210" height="135" class="comp-box" />
+    <text x="15" y="24" class="comp-title">OCR &amp; Extraction Engine</text>
+    <text x="15" y="44" class="comp-desc">ocrService.js</text>
+    <text x="15" y="64" class="comp-desc">• pdf-parse Digital Parser</text>
+    <text x="15" y="80" class="comp-desc">• Tesseract.js Image OCR</text>
+    <text x="15" y="96" class="comp-desc">• Regex Structured Fields</text>
+    <text x="15" y="112" class="comp-desc">• Composite Confidence Score</text>
+  </g>
+  <g transform="translate(980, 490)">
+    <rect width="240" height="135" class="comp-box" />
+    <text x="15" y="24" class="comp-title">Settlement &amp; Alerts</text>
+    <text x="15" y="44" class="comp-desc">settlement &amp; notificationService</text>
+    <text x="15" y="64" class="comp-desc">• SET-YYYYMMDD-XXXX Code Gen</text>
+    <text x="15" y="80" class="comp-desc">• Bank Transfer Status Tracking</text>
+    <text x="15" y="96" class="comp-desc">• In-App Real-time Notifications</text>
+    <text x="15" y="112" class="comp-desc">• Audit Timeline Event Logger</text>
+  </g>
+
+  <!-- Connectors Tier 3 -> Tier 4 -->
+  <line x1="640" y1="640" x2="640" y2="680" class="arrow-bidir" />
+  <rect x="520" y="650" width="240" height="20" fill="#ffffff" stroke="#000000" stroke-width="1" rx="3" />
+  <text x="640" y="664" font-family="Consolas" font-size="10px" font-weight="bold" fill="#000000" text-anchor="middle">Mongoose ODM 8.9.5 / MongoDB Wire</text>
+
+  <!-- TIER 4: PERSISTENCE &amp; STORAGE TIER -->
+  <rect x="40" y="680" width="1200" height="160" class="tier-box" />
+  <text x="60" y="705" class="tier-header">TIER 4: DATA PERSISTENCE &amp; STORAGE TIER (MongoDB ODM &amp; File Storage)</text>
+  <text x="1050" y="705" class="tier-tag">&lt;&lt;Storage Layer&gt;&gt;</text>
+
+  <g transform="translate(60, 720)">
+    <rect width="360" height="105" class="comp-box" />
+    <text x="15" y="24" class="comp-title">MongoDB Atlas Cloud Replica Set</text>
+    <text x="15" y="44" class="comp-desc">• Primary Database Engine with automatic failover</text>
+    <text x="15" y="60" class="comp-desc">• Strict Mongoose Schema validation &amp; indexing</text>
+    <text x="15" y="76" class="comp-desc">• 14 Persistent Collections (Claims, Users, Policies, etc.)</text>
+    <text x="15" y="92" class="comp-desc">• Connection URI managed securely in server/.env</text>
+  </g>
+  <g transform="translate(450, 720)">
+    <rect width="370" height="105" class="comp-box" />
+    <text x="15" y="24" class="comp-title">In-Memory MongoDB Fallback Engine</text>
+    <text x="15" y="44" class="comp-desc">• mongodb-memory-server v10.1.3 Integration</text>
+    <text x="15" y="60" class="comp-desc">• Automatic zero-config fallback if Atlas is unreachable</text>
+    <text x="15" y="76" class="comp-desc">• Isolated transient state for Jest automated test suite</text>
+    <text x="15" y="92" class="comp-desc">• Auto-seeded with 15 catalog products &amp; 5 role accounts</text>
+  </g>
+  <g transform="translate(850, 720)">
+    <rect width="370" height="105" class="comp-box" />
+    <text x="15" y="24" class="comp-title">Local Document &amp; Evidence Storage</text>
+    <text x="15" y="44" class="comp-desc">• Dedicated server/uploads/ directory for multipart files</text>
+    <text x="15" y="60" class="comp-desc">• UUID-based non-colliding filename hashing</text>
+    <text x="15" y="76" class="comp-desc">• Serves invoices, medical discharge summaries, FIRs</text>
+    <text x="15" y="92" class="comp-desc">• Secure path validation preventing directory traversal</text>
+  </g>
+
+</svg>

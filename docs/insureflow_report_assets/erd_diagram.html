@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body {
+    margin: 0; padding: 20px; font-family: 'Consolas', 'Segoe UI', Arial, monospace;
+    background: #ffffff; color: #0f172a;
+  }
+  .container {
+    width: 1400px; margin: 0 auto; border: 1px solid #cbd5e1; border-radius: 8px;
+    padding: 24px; background: #ffffff;
+  }
+  .title {
+    text-align: center; font-size: 22px; font-weight: 700; color: #1e3a8a;
+    font-family: 'Segoe UI', Arial, sans-serif; margin-bottom: 2px;
+  }
+  .subtitle {
+    text-align: center; font-size: 13px; color: #64748b; font-family: 'Segoe UI', Arial, sans-serif;
+    margin-bottom: 24px;
+  }
+  .erd-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+  }
+  .entity-box {
+    background: #ffffff; border: 1.5px solid #334155; border-radius: 6px;
+    box-shadow: 2px 2px 4px rgba(0,0,0,0.06); overflow: hidden; font-size: 11px;
+  }
+  .entity-header {
+    background: #1e3a8a; color: white; padding: 8px; font-weight: 700;
+    text-align: center; font-family: 'Segoe UI', Arial, sans-serif;
+  }
+  .table-row {
+    display: flex; padding: 4px 8px; border-bottom: 1px solid #f1f5f9;
+  }
+  .key-col { width: 34px; font-weight: 700; color: #e11d48; }
+  .name-col { flex: 1; font-weight: 600; color: #1e293b; }
+  .type-col { width: 90px; color: #64748b; text-align: right; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="title">InsureFlow — MongoDB Entity-Relationship Diagram (ERD)</div>
+  <div class="subtitle">Document Schemas, Primary ObjectIds, Foreign Key References & Cardinality</div>
+
+  <div class="erd-grid">
+    <!-- User -->
+    <div class="entity-box">
+      <div class="entity-header">users</div>
+      <div class="table-row"><span class="key-col">PK</span><span class="name-col">_id</span><span class="type-col">ObjectId</span></div>
+      <div class="table-row"><span class="key-col">UQ</span><span class="name-col">email</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">name</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">password</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col">IDX</span><span class="name-col">role</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">department</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">isActive</span><span class="type-col">Boolean</span></div>
+    </div>
+
+    <!-- PolicyProduct -->
+    <div class="entity-box">
+      <div class="entity-header">policyproducts</div>
+      <div class="table-row"><span class="key-col">PK</span><span class="name-col">_id</span><span class="type-col">ObjectId</span></div>
+      <div class="table-row"><span class="key-col">UQ</span><span class="name-col">planCode</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">productName</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">insurer</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col">IDX</span><span class="name-col">category</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">coverageLimit</span><span class="type-col">Number</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">annualPremium</span><span class="type-col">Number</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">isPublished</span><span class="type-col">Boolean</span></div>
+    </div>
+
+    <!-- CustomerPolicy -->
+    <div class="entity-box">
+      <div class="entity-header">customerpolicies</div>
+      <div class="table-row"><span class="key-col">PK</span><span class="name-col">_id</span><span class="type-col">ObjectId</span></div>
+      <div class="table-row"><span class="key-col">FK</span><span class="name-col">customer</span><span class="type-col">users._id</span></div>
+      <div class="table-row"><span class="key-col">FK</span><span class="name-col">product</span><span class="type-col">policyproducts._id</span></div>
+      <div class="table-row"><span class="key-col">UQ</span><span class="name-col">policyNumber</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col">IDX</span><span class="name-col">policySource</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">coverageAmount</span><span class="type-col">Number</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">startDate</span><span class="type-col">Date</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">endDate</span><span class="type-col">Date</span></div>
+    </div>
+
+    <!-- Claim -->
+    <div class="entity-box">
+      <div class="entity-header">claims</div>
+      <div class="table-row"><span class="key-col">PK</span><span class="name-col">_id</span><span class="type-col">ObjectId</span></div>
+      <div class="table-row"><span class="key-col">UQ</span><span class="name-col">claimReference</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col">FK</span><span class="name-col">customer</span><span class="type-col">users._id</span></div>
+      <div class="table-row"><span class="key-col">FK</span><span class="name-col">customerPolicy</span><span class="type-col">customerpolicies._id</span></div>
+      <div class="table-row"><span class="key-col">IDX</span><span class="name-col">category</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">requestedAmount</span><span class="type-col">Number</span></div>
+      <div class="table-row"><span class="key-col">IDX</span><span class="name-col">status</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">isHighValueClaim</span><span class="type-col">Boolean</span></div>
+    </div>
+
+    <!-- ClaimDocument -->
+    <div class="entity-box">
+      <div class="entity-header">claimdocuments</div>
+      <div class="table-row"><span class="key-col">PK</span><span class="name-col">_id</span><span class="type-col">ObjectId</span></div>
+      <div class="table-row"><span class="key-col">FK</span><span class="name-col">claim</span><span class="type-col">claims._id</span></div>
+      <div class="table-row"><span class="key-col">FK</span><span class="name-col">uploadedBy</span><span class="type-col">users._id</span></div>
+      <div class="table-row"><span class="key-col">FK</span><span class="name-col">ocrJob</span><span class="type-col">ocrjobs._id</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">fileName</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">mimeType</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col">IDX</span><span class="name-col">documentCategory</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">isVerified</span><span class="type-col">Boolean</span></div>
+    </div>
+
+    <!-- OCRJob -->
+    <div class="entity-box">
+      <div class="entity-header">ocrjobs</div>
+      <div class="table-row"><span class="key-col">PK</span><span class="name-col">_id</span><span class="type-col">ObjectId</span></div>
+      <div class="table-row"><span class="key-col">FK</span><span class="name-col">claim</span><span class="type-col">claims._id</span></div>
+      <div class="table-row"><span class="key-col">FK</span><span class="name-col">document</span><span class="type-col">claimdocuments._id</span></div>
+      <div class="table-row"><span class="key-col">IDX</span><span class="name-col">status</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">confidenceScore</span><span class="type-col">Number</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">structuredFields</span><span class="type-col">Mixed</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">rawExtractedText</span><span class="type-col">String</span></div>
+    </div>
+
+    <!-- SurveyAssignment -->
+    <div class="entity-box">
+      <div class="entity-header">surveyassignments</div>
+      <div class="table-row"><span class="key-col">PK</span><span class="name-col">_id</span><span class="type-col">ObjectId</span></div>
+      <div class="table-row"><span class="key-col">FK</span><span class="name-col">claim</span><span class="type-col">claims._id</span></div>
+      <div class="table-row"><span class="key-col">FK</span><span class="name-col">surveyor</span><span class="type-col">users._id</span></div>
+      <div class="table-row"><span class="key-col">FK</span><span class="name-col">assignedBy</span><span class="type-col">users._id</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">scheduledDate</span><span class="type-col">Date</span></div>
+      <div class="table-row"><span class="key-col">IDX</span><span class="name-col">status</span><span class="type-col">String</span></div>
+    </div>
+
+    <!-- SurveyReport -->
+    <div class="entity-box">
+      <div class="entity-header">surveyreports</div>
+      <div class="table-row"><span class="key-col">PK</span><span class="name-col">_id</span><span class="type-col">ObjectId</span></div>
+      <div class="table-row"><span class="key-col">FK</span><span class="name-col">claim</span><span class="type-col">claims._id</span></div>
+      <div class="table-row"><span class="key-col">FK</span><span class="name-col">surveyAssignment</span><span class="type-col">surveyassignments._id</span></div>
+      <div class="table-row"><span class="key-col">FK</span><span class="name-col">surveyor</span><span class="type-col">users._id</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">estimatedRepairCost</span><span class="type-col">Number</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">liabilityAssessment</span><span class="type-col">String</span></div>
+    </div>
+
+    <!-- Settlement -->
+    <div class="entity-box">
+      <div class="entity-header">settlements</div>
+      <div class="table-row"><span class="key-col">PK</span><span class="name-col">_id</span><span class="type-col">ObjectId</span></div>
+      <div class="table-row"><span class="key-col">UQ</span><span class="name-col">settlementReference</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col">FK</span><span class="name-col">claim</span><span class="type-col">claims._id</span></div>
+      <div class="table-row"><span class="key-col">FK</span><span class="name-col">customer</span><span class="type-col">users._id</span></div>
+      <div class="table-row"><span class="key-col">FK</span><span class="name-col">authorizedBy</span><span class="type-col">users._id</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">approvedAmount</span><span class="type-col">Number</span></div>
+      <div class="table-row"><span class="key-col">IDX</span><span class="name-col">status</span><span class="type-col">String</span></div>
+    </div>
+
+    <!-- ClaimTimelineEvent -->
+    <div class="entity-box">
+      <div class="entity-header">claimtimelineevents</div>
+      <div class="table-row"><span class="key-col">PK</span><span class="name-col">_id</span><span class="type-col">ObjectId</span></div>
+      <div class="table-row"><span class="key-col">FK</span><span class="name-col">claim</span><span class="type-col">claims._id</span></div>
+      <div class="table-row"><span class="key-col">FK</span><span class="name-col">performedBy</span><span class="type-col">users._id</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">fromStatus</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">toStatus</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">message</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">createdAt</span><span class="type-col">Date</span></div>
+    </div>
+
+    <!-- ConfigurableRule -->
+    <div class="entity-box">
+      <div class="entity-header">configurablerules</div>
+      <div class="table-row"><span class="key-col">PK</span><span class="name-col">_id</span><span class="type-col">ObjectId</span></div>
+      <div class="table-row"><span class="key-col">UQ</span><span class="name-col">ruleId</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">name</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col">IDX</span><span class="name-col">category</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col">IDX</span><span class="name-col">isEnabled</span><span class="type-col">Boolean</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">severity</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">parameters</span><span class="type-col">Mixed</span></div>
+    </div>
+
+    <!-- AuditLog -->
+    <div class="entity-box">
+      <div class="entity-header">auditlogs</div>
+      <div class="table-row"><span class="key-col">PK</span><span class="name-col">_id</span><span class="type-col">ObjectId</span></div>
+      <div class="table-row"><span class="key-col">FK</span><span class="name-col">user</span><span class="type-col">users._id</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">action</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">resourceType</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">resourceId</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">ipAddress</span><span class="type-col">String</span></div>
+      <div class="table-row"><span class="key-col"></span><span class="name-col">createdAt</span><span class="type-col">Date</span></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

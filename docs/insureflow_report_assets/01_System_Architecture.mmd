@@ -1,0 +1,46 @@
+graph TD
+  classDef default fill:#ffffff,stroke:#000000,stroke-width:1.5px,color:#000000;
+  
+  subgraph T1["Tier 1: Client Presentation Tier (React 18 & Vite)"]
+    CP["Customer Portal<br/>(Catalog, Claims, Status)"]
+    OW["Officer Workstation<br/>(Queue, OCR Audit, Rules)"]
+    SC["Surveyor Console<br/>(Roster, Damage Reports)"]
+    MA["Manager Adjudication<br/>(Escalations, Approvals)"]
+    AM["Admin Console<br/>(Catalog, Rules, Logs)"]
+  end
+
+  subgraph T2["Tier 2: API Gateway & Security (Express 4.21)"]
+    GW["JWT Authentication & RBAC Guard"]
+    UP["Multer File Streamer (UUID v4)"]
+    SEC["Helmet & CORS Security"]
+  end
+
+  subgraph T3["Tier 3: Business Microservices & Automation"]
+    CTRL["13 REST Controllers"]
+    RE["Rule Engine (7 Automated Checks)"]
+    FSM["Finite State Machine (15 States)"]
+    OCR["OCR Engine (pdf-parse + Tesseract.js)"]
+    SET["Settlement & Notification Engine"]
+  end
+
+  subgraph T4["Tier 4: Persistence & Storage"]
+    DB[("MongoDB Atlas Cloud Database")]
+    MEMDB[("In-Memory MongoDB Fallback")]
+    DISK[("Local File Uploads Storage")]
+  end
+
+  CP --> GW
+  OW --> GW
+  SC --> GW
+  MA --> GW
+  AM --> GW
+
+  GW --> CTRL
+  UP --> DISK
+  CTRL --> RE
+  CTRL --> FSM
+  CTRL --> OCR
+  CTRL --> SET
+
+  CTRL --> DB
+  CTRL -.-> MEMDB

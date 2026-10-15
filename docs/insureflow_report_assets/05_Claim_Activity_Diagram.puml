@@ -1,0 +1,59 @@
+@startuml 05_Claim_Activity_Diagram
+!theme plain
+skinparam monochrome true
+skinparam defaultFontName "Segoe UI"
+
+title Figure 5: UML Activity Diagram of InsureFlow
+
+start
+:Fill Claim Form & Incident Details;
+:Upload Supporting Documents (PDF / Images);
+
+if (Mandatory Documents Present?) then (No)
+  :Transition to DOCUMENTS_REQUIRED;
+  :Customer Uploads Missing Evidence;
+else (Yes)
+  :Store Files via Multer (UUID Hash);
+endif
+
+:Trigger Asynchronous OCR Job;
+:Execute 7 Deterministic Rule Checks;
+
+if (Rule Validation Score >= 70%?) then (Pass)
+  :Flag Low-Risk Track;
+else (Flagged / Fail)
+  :Flag High-Risk Audit Required;
+endif
+
+:Deliver to Officer Work Queue;
+:Officer Audits OCR Side-by-Side;
+
+if (Claim >= 5000 OR Category VEHICLE/PROPERTY?) then (Yes)
+  :Assign Field Surveyor (SURVEYOR_ASSIGNED);
+  :Surveyor Conducts Physical Inspection;
+  :Submit Survey Report & Cost Estimate;
+  :Resume Officer Review (UNDER_REVIEW);
+else (No)
+  :Desk Adjudication;
+endif
+
+:Officer Submits Adjudication Recommendation;
+:Escalate Claim to MANAGER_REVIEW;
+
+if (Manager Executive Decision?) then (Return)
+  :Return Claim to Officer for Inquiry;
+  detach
+elseif (Reject) then (Reject)
+  :Update Status to REJECTED;
+  :Notify Customer with Rejection Cause;
+  stop
+else (Approve)
+  :Update Status to APPROVED;
+  :Automatically Generate Settlement Record;
+  :Queue Settlement Voucher (SET-xxx);
+  :Finance Executes Bank Transfer Disbursement;
+  :Transition Status to SETTLED;
+  :Dispatch Settlement Notification to Customer;
+  stop
+endif
+@enduml

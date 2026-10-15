@@ -1,0 +1,9 @@
+{
+  "name": "report-generator",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "docx": "^9.11.0"
+  }
+}

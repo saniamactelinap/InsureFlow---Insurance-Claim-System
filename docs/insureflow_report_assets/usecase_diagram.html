@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body {
+    margin: 0; padding: 24px; font-family: 'Segoe UI', Arial, sans-serif;
+    background: #ffffff; color: #000000;
+  }
+  .container {
+    width: 1480px; margin: 0 auto; border: 2px solid #000000; border-radius: 4px;
+    padding: 24px; background: #ffffff;
+  }
+  .title {
+    text-align: center; font-size: 22px; font-weight: 700; color: #000000;
+    margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .subtitle {
+    text-align: center; font-size: 13px; color: #333333; margin-bottom: 24px; font-style: italic;
+  }
+  .layout {
+    display: grid; grid-template-columns: 240px 1fr 240px; gap: 24px; align-items: stretch;
+  }
+  .actor-col {
+    display: flex; flex-direction: column; justify-content: space-around; gap: 20px;
+  }
+  .actor-card {
+    background: #f8fafc; border: 1.5px solid #000000; border-radius: 6px;
+    padding: 14px 10px; text-align: center; box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+  }
+  .actor-icon {
+    font-size: 28px; color: #000000; margin-bottom: 4px;
+  }
+  .actor-name {
+    font-size: 14px; font-weight: 700; color: #000000; margin-bottom: 2px;
+  }
+  .actor-role {
+    font-size: 11px; font-family: 'Consolas', monospace; color: #000000; font-weight: 600;
+  }
+  .actor-desc {
+    font-size: 10px; color: #333333; margin-top: 4px; line-height: 1.3;
+  }
+  .system-boundary {
+    border: 2px solid #000000; border-radius: 8px; padding: 20px;
+    background: #ffffff; position: relative;
+  }
+  .system-title {
+    position: absolute; top: -14px; left: 30px; background: #ffffff;
+    padding: 0 14px; font-size: 14px; font-weight: 700; color: #000000;
+    border: 1px solid #000000; border-radius: 4px; text-transform: uppercase;
+  }
+  .usecases-container {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 20px; margin-top: 10px;
+  }
+  .usecase-box {
+    background: #ffffff; border: 1.5px solid #000000; border-radius: 28px;
+    padding: 10px 14px; text-align: center; box-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+  }
+  .uc-id {
+    font-size: 10px; font-weight: 700; color: #000000; font-family: 'Consolas', monospace;
+    display: block; margin-bottom: 2px;
+  }
+  .uc-title {
+    font-size: 12px; font-weight: 700; color: #000000;
+  }
+  .uc-actor-tag {
+    font-size: 10px; color: #444444; margin-top: 2px; font-style: italic; display: block;
+  }
+  .legend-box {
+    margin-top: 20px; border-top: 1px dashed #000000; padding-top: 12px;
+    display: flex; justify-content: space-around; font-size: 11px; color: #000000;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="title">InsureFlow — UML Use-Case Diagram</div>
+  <div class="subtitle">Complete Role-Based Interaction Specification: Actors, System Boundary, and Verified Functional Responsibilities</div>
+
+  <div class="layout">
+    <!-- Left Column: Customer & Field Surveyor -->
+    <div class="actor-col">
+      <div class="actor-card">
+        <div class="actor-icon">👤</div>
+        <div class="actor-name">Policyholder</div>
+        <div class="actor-role">&lt;&lt;Actor: CUSTOMER&gt;&gt;</div>
+        <div class="actor-desc">Consumers seeking coverage, filing claims, uploading evidence, and monitoring settlements.</div>
+      </div>
+      <div class="actor-card">
+        <div class="actor-icon">🔍</div>
+        <div class="actor-name">Field Surveyor</div>
+        <div class="actor-role">&lt;&lt;Actor: SURVEYOR&gt;&gt;</div>
+        <div class="actor-desc">Licensed loss assessors conducting physical inspections for high-value / vehicular claims.</div>
+      </div>
+    </div>
+
+    <!-- Center Column: InsureFlow System Boundary -->
+    <div class="system-boundary">
+      <div class="system-title">InsureFlow System Boundary</div>
+      <div class="usecases-container">
+        <!-- Customer Use Cases -->
+        <div class="usecase-box">
+          <span class="uc-id">UC-01</span>
+          <span class="uc-title">Browse & Compare Policy Catalog</span>
+          <span class="uc-actor-tag">Participating Actor: Customer</span>
+        </div>
+        <div class="usecase-box">
+          <span class="uc-id">UC-02</span>
+          <span class="uc-title">Register External Third-Party Policy</span>
+          <span class="uc-actor-tag">Participating Actor: Customer</span>
+        </div>
+        <div class="usecase-box">
+          <span class="uc-id">UC-03</span>
+          <span class="uc-title">Submit Digital Insurance Claim (FNOL)</span>
+          <span class="uc-actor-tag">Participating Actor: Customer</span>
+        </div>
+        <div class="usecase-box">
+          <span class="uc-id">UC-04</span>
+          <span class="uc-title">Upload Supporting Invoices & Proofs</span>
+          <span class="uc-actor-tag">Participating Actor: Customer</span>
+        </div>
+        <div class="usecase-box">
+          <span class="uc-id">UC-05</span>
+          <span class="uc-title">Track Claim Timeline & Real-Time Status</span>
+          <span class="uc-actor-tag">Participating Actor: Customer</span>
+        </div>
+        <div class="usecase-box">
+          <span class="uc-id">UC-06</span>
+          <span class="uc-title">View Settlement & Bank Payout Voucher</span>
+          <span class="uc-actor-tag">Participating Actor: Customer</span>
+        </div>
+
+        <!-- Officer Use Cases -->
+        <div class="usecase-box">
+          <span class="uc-id">UC-07</span>
+          <span class="uc-title">Access Claims Adjudication Work Queue</span>
+          <span class="uc-actor-tag">Participating Actor: Insurance Officer</span>
+        </div>
+        <div class="usecase-box">
+          <span class="uc-id">UC-08</span>
+          <span class="uc-title">Cross-Audit OCR Extracted Invoice Data</span>
+          <span class="uc-actor-tag">Participating Actor: Insurance Officer</span>
+        </div>
+        <div class="usecase-box">
+          <span class="uc-id">UC-09</span>
+          <span class="uc-title">Evaluate Deterministic Rule Compliance</span>
+          <span class="uc-actor-tag">Participating Actor: Insurance Officer</span>
+        </div>
+        <div class="usecase-box">
+          <span class="uc-id">UC-10</span>
+          <span class="uc-title">Request Supplementary Documents / Assign Surveyor</span>
+          <span class="uc-actor-tag">Participating Actor: Insurance Officer</span>
+        </div>
+        <div class="usecase-box">
+          <span class="uc-id">UC-11</span>
+          <span class="uc-title">Formulate Adjudication Recommendation</span>
+          <span class="uc-actor-tag">Participating Actor: Insurance Officer</span>
+        </div>
+        <div class="usecase-box">
+          <span class="uc-id">UC-12</span>
+          <span class="uc-title">Verify External Policy Registrations</span>
+          <span class="uc-actor-tag">Participating Actor: Insurance Officer</span>
+        </div>
+
+        <!-- Surveyor Use Cases -->
+        <div class="usecase-box">
+          <span class="uc-id">UC-13</span>
+          <span class="uc-title">Access Assigned Inspection Task Roster</span>
+          <span class="uc-actor-tag">Participating Actor: Field Surveyor</span>
+        </div>
+        <div class="usecase-box">
+          <span class="uc-id">UC-14</span>
+          <span class="uc-title">Conduct Physical Damage Assessment & Photos</span>
+          <span class="uc-actor-tag">Participating Actor: Field Surveyor</span>
+        </div>
+        <div class="usecase-box">
+          <span class="uc-id">UC-15</span>
+          <span class="uc-title">Submit Technical Survey & Repair Estimate</span>
+          <span class="uc-actor-tag">Participating Actor: Field Surveyor</span>
+        </div>
+
+        <!-- Manager Use Cases -->
+        <div class="usecase-box">
+          <span class="uc-id">UC-16</span>
+          <span class="uc-title">Review Escalated Claims & Survey Reports</span>
+          <span class="uc-actor-tag">Participating Actor: Claims Manager</span>
+        </div>
+        <div class="usecase-box">
+          <span class="uc-id">UC-17</span>
+          <span class="uc-title">Execute Final Adjudication (Approve / Reject)</span>
+          <span class="uc-actor-tag">Participating Actor: Claims Manager</span>
+        </div>
+        <div class="usecase-box">
+          <span class="uc-id">UC-18</span>
+          <span class="uc-title">Authorize Settlement Record & Payout Method</span>
+          <span class="uc-actor-tag">Participating Actor: Claims Manager</span>
+        </div>
+
+        <!-- Administrator Use Cases -->
+        <div class="usecase-box">
+          <span class="uc-id">UC-19</span>
+          <span class="uc-title">Manage Underwriting Policy Catalog Plans</span>
+          <span class="uc-actor-tag">Participating Actor: Administrator</span>
+        </div>
+        <div class="usecase-box">
+          <span class="uc-id">UC-20</span>
+          <span class="uc-title">Configure Deterministic Validation Rules</span>
+          <span class="uc-actor-tag">Participating Actor: Administrator</span>
+        </div>
+        <div class="usecase-box">
+          <span class="uc-id">UC-21</span>
+          <span class="uc-title">Govern User Accounts & Role Permissions</span>
+          <span class="uc-actor-tag">Participating Actor: Administrator</span>
+        </div>
+        <div class="usecase-box">
+          <span class="uc-id">UC-22</span>
+          <span class="uc-title">Inspect Security & Transaction Audit Trail</span>
+          <span class="uc-actor-tag">Participating Actor: Administrator</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Officer, Manager & Administrator -->
+    <div class="actor-col">
+      <div class="actor-card">
+        <div class="actor-icon">📋</div>
+        <div class="actor-name">Insurance Officer</div>
+        <div class="actor-role">&lt;&lt;Actor: OFFICER&gt;&gt;</div>
+        <div class="actor-desc">Performs initial claim vetting, audits OCR figures, inspects rule flags, and recommends escalation.</div>
+      </div>
+      <div class="actor-card">
+        <div class="actor-icon">⚖️</div>
+        <div class="actor-name">Claims Manager</div>
+        <div class="actor-role">&lt;&lt;Actor: MANAGER&gt;&gt;</div>
+        <div class="actor-desc">Holds executive financial approval authority, authorizes payouts, or returns claims for re-audit.</div>
+      </div>
+      <div class="actor-card">
+        <div class="actor-icon">⚙️</div>
+        <div class="actor-name">Administrator</div>
+        <div class="actor-role">&lt;&lt;Actor: ADMIN&gt;&gt;</div>
+        <div class="actor-desc">Underwrites policy products, configures automated rule thresholds, and audits security logs.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend-box">
+    <span><b>UML Legend:</b> Actors (Stick / Card) outside boundary</span>
+    <span><b>System Boundary:</b> Enclosing all internal software functions</span>
+    <span><b>Use Cases (Ovals):</b> Specific verified functional goals</span>
+    <span><b>All text and associations:</b> 100% Black Ink</span>
+  </div>
+</div>
+</body>
+</html>

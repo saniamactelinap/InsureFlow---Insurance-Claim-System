@@ -1,0 +1,61 @@
+@startuml 07_React_Router_Architecture
+!theme plain
+skinparam monochrome true
+skinparam defaultFontName "Segoe UI"
+skinparam packageStyle rectangle
+
+title Figure 7: React Router v6 Application Navigation Architecture
+
+rectangle "<BrowserRouter> (App.jsx Master Switch)" {
+  rectangle "Public Portal (Unauthenticated)" as Public {
+    [/ (Root)] --> [HomePage]
+    [/login] --> [LoginPage]
+    [/register] --> [RegisterPage]
+    [/catalog] --> [ProductCatalogPage]
+    [/catalog/:id] --> [ProductDetailPage]
+    [/about] --> [AboutPage]
+    [/faq] --> [FAQPage]
+    [/contact] --> [ContactPage]
+    [* (Catch-All)] --> [NotFoundPage (404)]
+  }
+
+  rectangle "Role-Guarded Workspaces (<ProtectedRoute>)" as Protected {
+    package "Customer Workspace (allowedRoles: ['CUSTOMER'])" {
+      [/customer/dashboard] --> [CustomerDashboard]
+      [/customer/claims] --> [CustomerClaimsList]
+      [/customer/claims/new] --> [NewClaimSubmission]
+      [/customer/claims/:id] --> [ClaimDetailTimeline]
+      [/customer/policies] --> [CustomerPolicies]
+      [/customer/settlements] --> [CustomerSettlements]
+    }
+
+    package "Officer Workspace (allowedRoles: ['OFFICER'])" {
+      [/officer/queue] --> [OfficerQueueWorkspace]
+      [/officer/adjudicate/:id] --> [ClaimAdjudicationModal]
+      [/officer/documents] --> [OCRInspectionViewer]
+      [/officer/policies] --> [ExternalPolicyAudit]
+    }
+
+    package "Surveyor Workspace (allowedRoles: ['SURVEYOR'])" {
+      [/surveyor/roster] --> [SurveyorRoster]
+      [/surveyor/inspect/:id] --> [DamageAssessmentForm]
+      [/surveyor/reports] --> [CompletedSurveysHistory]
+    }
+
+    package "Manager Workspace (allowedRoles: ['MANAGER'])" {
+      [/manager/escalations] --> [ManagerEscalationQueue]
+      [/manager/review/:id] --> [ExecutiveDecisionPortal]
+      [/manager/settlements] --> [SettlementAuthorization]
+      [/manager/analytics] --> [ClaimsAnalyticsDashboard]
+    }
+
+    package "Admin Workspace (allowedRoles: ['ADMIN'])" {
+      [/admin/catalog] --> [UnderwritingCatalogMgmt]
+      [/admin/catalog/new] --> [ProductPublishingForm]
+      [/admin/rules] --> [RuleEngineTuningPanel]
+      [/admin/users] --> [UserRoleGovernance]
+      [/admin/audit-logs] --> [SystemAuditLogViewer]
+    }
+  }
+}
+@enduml

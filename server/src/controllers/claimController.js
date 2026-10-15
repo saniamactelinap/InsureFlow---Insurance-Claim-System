@@ -63,7 +63,68 @@ export const createClaim = async (req, res, next) => {
       ocrStatus: 'NOT_STARTED',
     });
 
-    // Handle files if uploaded in multipart/form-data
+    // Handle pre-scanned documents verified in Step 3
+    let preScanned = req.body.preScannedDocs;
+    if (typeof preScanned === 'string') {
+      try {
+        preScanned = JSON.parse(preScanned);
+      } catch (e) {
+        preScanned = null;
+      }
+    }
+
+    if (Array.isArray(preScanned) && preScanned.length > 0) {
+      for (const pDoc of preScanned) {
+        const meta = pDoc.fileMeta || {};
+        const doc = await ClaimDocument.create({
+          claim: claim._id,
+          originalName: meta.originalName || pDoc.originalName || 'Supporting_Document',
+          fileName: meta.fileName || pDoc.fileName || 'Supporting_Document',
+          filePath: meta.filePath || pDoc.filePath || '',
+          fileUrl: meta.fileUrl || pDoc.fileUrl || '',
+          mimeType: meta.mimeType || pDoc.mimeType || 'application/pdf',
+          sizeBytes: meta.sizeBytes || pDoc.sizeBytes || 0,
+          documentCategory: meta.documentCategory || pDoc.documentCategory || 'MEDICAL_BILL',
+          uploadedBy: req.user._id,
+        });
+
+        const ocrJob = await OCRJob.create({
+          claim: claim._id,
+          document: doc._id,
+          status: pDoc.success === false ? 'FAILED' : 'COMPLETED',
+          confidenceScore: pDoc.confidenceScore ?? 0,
+          opticalConfidence: pDoc.opticalConfidence ?? 0,
+          fieldExtractionConfidence: pDoc.fieldExtractionConfidence ?? 0,
+          reviewStatus: pDoc.reviewStatus ?? 'NEEDS_MANUAL_REVIEW',
+          rawText: pDoc.rawText || '',
+          provider: (pDoc.extractionMethod && pDoc.extractionMethod.includes('scanned'))
+            ? 'scanned_pdf_ocr'
+            : ((pDoc.extractionMethod && pDoc.extractionMethod.includes('pdf')) ? 'pdf_parse' : (pDoc.extractionMethod === 'error' ? 'unknown' : 'tesseract')),
+          extractedFields: {
+            invoiceOrBillNumber: pDoc.fields?.invoiceNumber ?? null,
+            detectedDate: pDoc.fields?.invoiceDate ?? null,
+            detectedAmount: pDoc.fields?.totalAmount ?? null,
+            issuerName: pDoc.fields?.hospitalName ?? null,
+            patientOrVehicleId: pDoc.fields?.patientName ?? null,
+            diagnosesOrDamageKeywords: pDoc.fields?.diagnosis ? [pDoc.fields.diagnosis] : [],
+            ...(pDoc.fields || {}),
+          },
+          correctedFields: pDoc.correctedFields || {},
+          correctedBy: pDoc.hasUserCorrections ? req.user._id : null,
+          correctedAt: pDoc.hasUserCorrections ? new Date() : null,
+          correctionAuditNote: pDoc.hasUserCorrections ? 'Customer reviewed and corrected fields in Step 3 upload wizard.' : '',
+          processingDurationMs: pDoc.durationMs || 120,
+        });
+
+        doc.ocrJob = ocrJob._id;
+        await doc.save();
+      }
+
+      claim.ocrStatus = 'COMPLETED';
+      await claim.save();
+    }
+
+    // Handle files if uploaded directly in multipart/form-data
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
         // Document category can be derived from body or default
@@ -91,8 +152,14 @@ export const createClaim = async (req, res, next) => {
             claim: claim._id,
             document: doc._id,
             status: ocrResult.error ? 'FAILED' : 'COMPLETED',
-            confidenceScore: ocrResult.confidenceScore,
-            rawText: ocrResult.rawText,
+            provider: ocrResult.extractionMethod?.includes('scanned')
+              ? 'scanned_pdf_ocr'
+              : (ocrResult.extractionMethod?.includes('pdf') ? 'pdf_parse' : (ocrResult.extractionMethod === 'error' ? 'unknown' : 'tesseract')),
+            confidenceScore: ocrResult.confidenceScore ?? 0,
+            opticalConfidence: ocrResult.opticalConfidence ?? 0,
+            fieldExtractionConfidence: ocrResult.fieldExtractionConfidence ?? 0,
+            reviewStatus: ocrResult.reviewStatus ?? 'NEEDS_MANUAL_REVIEW',
+            rawText: ocrResult.rawText || '',
             extractedFields: ocrResult.extractedFields,
             errorMessage: ocrResult.error || '',
             processingDurationMs: ocrResult.durationMs,

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body {
+    margin: 0; padding: 20px; font-family: 'Segoe UI', Arial, sans-serif;
+    background: #ffffff; color: #0f172a;
+  }
+  .container {
+    width: 1400px; margin: 0 auto; border: 1px solid #cbd5e1; border-radius: 8px;
+    padding: 24px; background: #ffffff;
+  }
+  .title {
+    text-align: center; font-size: 22px; font-weight: 700; color: #1e3a8a; margin-bottom: 2px;
+  }
+  .subtitle {
+    text-align: center; font-size: 13px; color: #64748b; margin-bottom: 24px;
+  }
+  .actors {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; margin-bottom: 20px;
+    text-align: center;
+  }
+  .actor-box {
+    background: #1e3a8a; color: white; padding: 10px; border-radius: 6px;
+    font-size: 12px; font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .lifelines {
+    position: relative; border-left: 2px dashed #cbd5e1; margin-left: 50px;
+    padding-left: 20px;
+  }
+  .step-row {
+    display: flex; align-items: flex-start; margin-bottom: 16px; position: relative;
+  }
+  .step-num {
+    background: #2563eb; color: white; border-radius: 50%; width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center; font-size: 11px;
+    font-weight: 700; flex-shrink: 0; margin-right: 14px;
+  }
+  .step-content {
+    background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #2563eb;
+    border-radius: 6px; padding: 10px 14px; width: 100%; box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  }
+  .step-header {
+    font-size: 13px; font-weight: 700; color: #1e293b; margin-bottom: 4px;
+    display: flex; justify-content: space-between;
+  }
+  .step-parties {
+    font-size: 11px; font-weight: 600; color: #0284c7;
+  }
+  .step-desc {
+    font-size: 12px; color: #475569; line-height: 1.4;
+  }
+  .step-code {
+    background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 11px; color: #0f172a;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="title">InsureFlow — UML Sequence Diagram</div>
+  <div class="subtitle">End-to-End Execution Trace: Claim Ingestion, Automated Rules Evaluation, Officer Review & Manager Settlement</div>
+
+  <div class="actors">
+    <div class="actor-box">Customer<br>(Browser Client)</div>
+    <div class="actor-box">API Gateway<br>(Express.js / Multer)</div>
+    <div class="actor-box">OCR Service<br>(Tesseract / PDF-Parse)</div>
+    <div class="actor-box">Deterministic Rule Engine<br>(ruleEngineService)</div>
+    <div class="actor-box">Insurance Officer<br>(Adjudication Portal)</div>
+    <div class="actor-box">Claims Manager<br>(Executive Portal)</div>
+    <div class="actor-box">MongoDB & FSM<br>(stateMachineService)</div>
+  </div>
+
+  <div class="lifelines">
+    <!-- Step 1 -->
+    <div class="step-row">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-header">
+          <span>Claim Filing with PDF Invoice Attachment</span>
+          <span class="step-parties">Customer ➔ API Gateway</span>
+        </div>
+        <div class="step-desc">
+          Customer inputs incident details, selects active policy (<span class="step-code">customerPolicyId</span>), attaches medical bill/repair estimate, and triggers <span class="step-code">POST /api/claims</span> with JWT Bearer Token.
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step-row">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-header">
+          <span>Multipart Stream Ingestion & Claim Entity Creation</span>
+          <span class="step-parties">API Gateway ➔ MongoDB</span>
+        </div>
+        <div class="step-desc">
+          Multer streams file into <span class="step-code">server/uploads/</span> with randomized UUID filename. Express initializes new <span class="step-code">Claim</span> entity with status <span class="step-code">SUBMITTED</span> and reference <span class="step-code">CLM-YYYYMMDD-XXXX</span>.
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step-row">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-header">
+          <span>Asynchronous OCR Text & Field Extraction</span>
+          <span class="step-parties">API Gateway ➔ OCR Service</span>
+        </div>
+        <div class="step-desc">
+          OCR service evaluates MIME type. Extracts selectable text via <span class="step-code">pdf-parse</span> or renders page streams to <span class="step-code">tesseract.js</span> optical worker. Extracts regex fields (Invoice No, Dates, Total Amount) and computes composite confidence score.
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="step-row">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-header">
+          <span>Deterministic Claim Rule Engine Execution</span>
+          <span class="step-parties">API Gateway ➔ Rule Engine Service</span>
+        </div>
+        <div class="step-desc">
+          Executes <span class="step-code">evaluateClaim(claimId)</span> against active policy. Assesses: 1) Active Date Coverage, 2) Category Match, 3) Coverage Limit Compliance, 4) Document Completeness, 5) Duplicate Submission Check, 6) Policy Source Authentication, 7) High-Value Surveyor Trigger.
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 5 -->
+    <div class="step-row">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <div class="step-header">
+          <span>Persist Automated Validation & Log Timeline Event</span>
+          <span class="step-parties">Rule Engine ➔ MongoDB & FSM</span>
+        </div>
+        <div class="step-desc">
+          Claim document updated with <span class="step-code">automatedValidation</span> (status: PASS/FLAGGED/REQUIRES_REVIEW/FAIL, score: 0-100%). FSM records immutable <span class="step-code">ClaimTimelineEvent</span> in MongoDB.
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 6 -->
+    <div class="step-row">
+      <div class="step-num">6</div>
+      <div class="step-content">
+        <div class="step-header">
+          <span>Officer Queue Fetch & OCR Cross-Audit</span>
+          <span class="step-parties">Officer ➔ API Gateway ➔ MongoDB</span>
+        </div>
+        <div class="step-desc">
+          Officer opens <span class="step-code">/officer/claims/:id</span>. System renders side-by-side OCR audit modal comparing extracted PDF amounts against claimed amounts. Officer audits rule compliance badges.
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 7 -->
+    <div class="step-row">
+      <div class="step-num">7</div>
+      <div class="step-content">
+        <div class="step-header">
+          <span>Officer Recommendation & Manager Escalation</span>
+          <span class="step-parties">Officer ➔ API Gateway ➔ FSM</span>
+        </div>
+        <div class="step-desc">
+          Officer approves audit, inputs recommendation note and recommended amount, executing <span class="step-code">POST /api/claims/:id/recommend</span>. FSM transitions claim to <span class="step-code">MANAGER_REVIEW</span>.
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 8 -->
+    <div class="step-row">
+      <div class="step-num">8</div>
+      <div class="step-content">
+        <div class="step-header">
+          <span>Manager Final Adjudication & Settlement Generation</span>
+          <span class="step-parties">Manager ➔ API Gateway ➔ Settlement Service</span>
+        </div>
+        <div class="step-desc">
+          Manager reviews officer notes and rule score. Executes <span class="step-code">POST /api/manager/claims/:id/approve</span>. FSM updates claim to <span class="step-code">SETTLEMENT_PENDING</span> and instantiates <span class="step-code">Settlement</span> record (<span class="step-code">SET-YYYYMMDD-XXXX</span>).
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 9 -->
+    <div class="step-row">
+      <div class="step-num">9</div>
+      <div class="step-content">
+        <div class="step-header">
+          <span>Settlement Execution & Customer Notification</span>
+          <span class="step-parties">Settlement Service ➔ MongoDB ➔ Customer</span>
+        </div>
+        <div class="step-desc">
+          Finance marks settlement <span class="step-code">SETTLED</span> with bank transaction reference. Notification service pushes in-app alert to customer. Customer views settled status and payment reference in <span class="step-code">/customer/settlements</span>.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

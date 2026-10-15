@@ -1,0 +1,49 @@
+sequenceDiagram
+  autonumber
+  actor Cust as Customer
+  participant UI as React Client
+  participant API as Express Gateway
+  participant CTRL as Claim Controller
+  participant ENG as Rule & OCR Engine
+  participant DB as MongoDB Atlas
+  actor Staff as Reviewer Staff
+
+  Cust->>UI: Fill Claim & Attach Bills
+  UI->>API: POST /api/claims (Multipart Form Data)
+  API->>CTRL: Verify JWT & Multer Save File
+  CTRL->>DB: Claim.create({ status: 'SUBMITTED' })
+  DB-->>CTRL: claimDoc (CLM-xxx)
+  
+  CTRL->>ENG: ocrService.processDocument(docId)
+  ENG->>DB: OCRJob.create({ extractedFields })
+
+  CTRL->>ENG: ruleEngineService.evaluateClaim(claimId)
+  ENG->>DB: Read Policy Caps & Coverage Dates
+  ENG-->>CTRL: ValidationResult (Score, Flags)
+
+  CTRL-->>UI: HTTP 201 Created (CLM-xxx)
+  UI-->>Cust: Render Status Timeline
+
+  Staff->>API: GET /api/claims (Officer Queue)
+  API-->>Staff: Live Claims List with OCR Badges
+
+  opt If requestedAmount >= 5000 or Vehicle/Property Damage
+    Staff->>API: POST /api/surveys/assign (Assign Surveyor)
+    API->>DB: Claim.status -> 'SURVEYOR_ASSIGNED'
+    Staff->>API: POST /api/surveys/:id/report (Survey Damage Report)
+    API->>DB: SurveyReport.create() & status -> 'UNDER_REVIEW'
+  end
+
+  Staff->>API: POST /api/claims/:id/recommend (Escalate)
+  API->>DB: Claim.status -> 'MANAGER_REVIEW'
+
+  alt Manager Adjudication: Approved
+    Staff->>API: POST /api/manager/claims/:id/approve
+    API->>DB: Claim.status -> 'APPROVED' & Settlement.create()
+    Staff->>API: PUT /api/settlements/:id/disburse (Finance Transfer)
+    API->>DB: Settlement.status -> 'SETTLED'
+    API-->>Cust: Dispatch Bank Settlement Notification
+  else Manager Adjudication: Rejected
+    Staff->>API: POST /api/manager/claims/:id/reject
+    API->>DB: Claim.status -> 'REJECTED'
+  end

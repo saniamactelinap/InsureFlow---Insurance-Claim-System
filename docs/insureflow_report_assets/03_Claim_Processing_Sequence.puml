@@ -1,0 +1,56 @@
+@startuml 03_Claim_Processing_Sequence
+!theme plain
+skinparam monochrome true
+skinparam defaultFontName "Segoe UI"
+skinparam sequenceMessageAlign center
+
+title Figure 3: UML Sequence Diagram for Claim Processing Lifecycle
+
+actor Customer as Cust
+boundary "React Client" as UI
+control "Express Gateway" as API
+control "Claim Controller" as CTRL
+entity "Rule & OCR Engine" as Engines
+database "MongoDB Atlas" as DB
+actor "Reviewer Staff" as Staff
+
+Cust -> UI : Fill Claim & Attach Bills
+UI -> API : POST /api/claims (multipart/form-data)
+API -> CTRL : Verify JWT & Multer save file
+CTRL -> DB : Claim.create({ status: 'SUBMITTED' })
+DB --> CTRL : claimDoc (CLM-xxx)
+
+CTRL -> Engines : ocrService.processDocument(docId)
+Engines -> DB : OCRJob.create({ extractedFields })
+
+CTRL -> Engines : ruleEngineService.evaluateClaim(claimId)
+Engines -> DB : Read policy caps & dates
+Engines --> CTRL : ValidationResult (Score & Flags)
+
+CTRL --> UI : HTTP 201 Created (ClaimReference)
+UI --> Cust : Render Status Dashboard
+
+Staff -> API : GET /api/claims (Officer Queue)
+API --> Staff : Live Claims with OCR Badges
+
+alt If requestedAmount >= 5000 or Vehicular/Property Damage
+  Staff -> API : POST /api/surveys/assign
+  API -> DB : status -> 'SURVEYOR_ASSIGNED'
+  Staff -> API : POST /api/surveys/:id/report
+  API -> DB : SurveyReport.create() & status -> 'UNDER_REVIEW'
+end
+
+Staff -> API : POST /api/claims/:id/recommend
+API -> DB : status -> 'MANAGER_REVIEW'
+
+alt Manager Adjudication
+  Staff -> API : POST /api/manager/claims/:id/approve
+  API -> DB : status -> 'APPROVED' & Settlement.create()
+  Staff -> API : PUT /api/settlements/:id/disburse
+  API -> DB : status -> 'SETTLED'
+  API -> Cust : Dispatched Bank Settlement Notification
+else Reject
+  Staff -> API : POST /api/manager/claims/:id/reject
+  API -> DB : status -> 'REJECTED'
+end
+@enduml

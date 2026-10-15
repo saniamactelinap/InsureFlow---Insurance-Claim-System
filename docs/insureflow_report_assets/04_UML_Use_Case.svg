@@ -1,0 +1,231 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1100" viewBox="0 0 1440 1100">
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .border { fill: none; stroke: #000000; stroke-width: 2; }
+      .title { font-family: 'Segoe UI', Arial, sans-serif; font-size: 20px; font-weight: bold; fill: #000000; text-anchor: middle; }
+      .subtitle { font-family: 'Segoe UI', Arial, sans-serif; font-size: 12px; fill: #333333; text-anchor: middle; font-style: italic; }
+      .sys-boundary { fill: #ffffff; stroke: #000000; stroke-width: 2; rx: 8; }
+      .sys-label { font-family: 'Segoe UI', Arial, sans-serif; font-size: 14px; font-weight: bold; fill: #000000; }
+      .oval { fill: #ffffff; stroke: #000000; stroke-width: 1.5; rx: 20; ry: 20; }
+      .oval-text { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11px; font-weight: bold; fill: #000000; text-anchor: middle; }
+      .actor-label { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; font-weight: bold; fill: #000000; text-anchor: middle; }
+      .actor-role { font-family: 'Consolas', monospace; font-size: 10px; fill: #444444; text-anchor: middle; }
+      .stick { stroke: #000000; stroke-width: 2; stroke-linecap: round; fill: none; }
+      .head { fill: #ffffff; stroke: #000000; stroke-width: 2; }
+      .assoc { stroke: #000000; stroke-width: 1.2; fill: none; }
+    </style>
+  </defs>
+
+  <rect width="1440" height="1100" class="bg" />
+  <rect x="15" y="15" width="1410" height="1070" class="border" />
+
+  <text x="720" y="46" class="title">FIGURE 4: UML USE-CASE DIAGRAM OF INSUREFLOW</text>
+  <text x="720" y="66" class="subtitle">Complete Role-Based Interaction Specification: Actors, System Boundary, and Verified Functional Responsibilities</text>
+
+  <!-- InsureFlow System Boundary (Center Box) -->
+  <rect x="280" y="85" width="880" height="970" class="sys-boundary" />
+  <rect x="300" y="75" width="160" height="24" fill="#ffffff" stroke="#000000" stroke-width="1.5" rx="3" />
+  <text x="380" y="91" class="sys-label" text-anchor="middle">InsureFlow</text>
+
+  <!-- ================= ACTORS ================= -->
+
+  <!-- ACTOR 1: CUSTOMER (Top Left: cx=140, cy=240) -->
+  <g transform="translate(140, 200)">
+    <!-- Stick figure -->
+    <circle cx="0" cy="0" r="14" class="head" />
+    <line x1="0" y1="14" x2="0" y2="50" class="stick" /> <!-- Body -->
+    <line x1="-22" y1="26" x2="22" y2="26" class="stick" /> <!-- Arms -->
+    <line x1="0" y1="50" x2="-18" y2="82" class="stick" /> <!-- Left Leg -->
+    <line x1="0" y1="50" x2="18" y2="82" class="stick" /> <!-- Right Leg -->
+    <text x="0" y="105" class="actor-label">Customer</text>
+    <text x="0" y="120" class="actor-role">&lt;&lt;Policyholder&gt;&gt;</text>
+  </g>
+
+  <!-- ACTOR 2: TECHNICAL SURVEYOR (Bottom Left: cx=140, cy=740) -->
+  <g transform="translate(140, 700)">
+    <!-- Stick figure -->
+    <circle cx="0" cy="0" r="14" class="head" />
+    <line x1="0" y1="14" x2="0" y2="50" class="stick" />
+    <line x1="-22" y1="26" x2="22" y2="26" class="stick" />
+    <line x1="0" y1="50" x2="-18" y2="82" class="stick" />
+    <line x1="0" y1="50" x2="18" y2="82" class="stick" />
+    <text x="0" y="105" class="actor-label">Field Surveyor</text>
+    <text x="0" y="120" class="actor-role">&lt;&lt;Loss Assessor&gt;&gt;</text>
+  </g>
+
+  <!-- ACTOR 3: INSURANCE OFFICER (Top Right: cx=1300, cy=200) -->
+  <g transform="translate(1300, 160)">
+    <circle cx="0" cy="0" r="14" class="head" />
+    <line x1="0" y1="14" x2="0" y2="50" class="stick" />
+    <line x1="-22" y1="26" x2="22" y2="26" class="stick" />
+    <line x1="0" y1="50" x2="-18" y2="82" class="stick" />
+    <line x1="0" y1="50" x2="18" y2="82" class="stick" />
+    <text x="0" y="105" class="actor-label">Insurance Officer</text>
+    <text x="0" y="120" class="actor-role">&lt;&lt;Adjudicator&gt;&gt;</text>
+  </g>
+
+  <!-- ACTOR 4: CLAIMS MANAGER (Middle Right: cx=1300, cy=520) -->
+  <g transform="translate(1300, 480)">
+    <circle cx="0" cy="0" r="14" class="head" />
+    <line x1="0" y1="14" x2="0" y2="50" class="stick" />
+    <line x1="-22" y1="26" x2="22" y2="26" class="stick" />
+    <line x1="0" y1="50" x2="-18" y2="82" class="stick" />
+    <line x1="0" y1="50" x2="18" y2="82" class="stick" />
+    <text x="0" y="105" class="actor-label">Claims Manager</text>
+    <text x="0" y="120" class="actor-role">&lt;&lt;Executive Approver&gt;&gt;</text>
+  </g>
+
+  <!-- ACTOR 5: ADMINISTRATOR (Bottom Right: cx=1300, cy=820) -->
+  <g transform="translate(1300, 780)">
+    <circle cx="0" cy="0" r="14" class="head" />
+    <line x1="0" y1="14" x2="0" y2="50" class="stick" />
+    <line x1="-22" y1="26" x2="22" y2="26" class="stick" />
+    <line x1="0" y1="50" x2="-18" y2="82" class="stick" />
+    <line x1="0" y1="50" x2="18" y2="82" class="stick" />
+    <text x="0" y="105" class="actor-label">Administrator</text>
+    <text x="0" y="120" class="actor-role">&lt;&lt;System Governance&gt;&gt;</text>
+  </g>
+
+  <!-- ================= USE CASES (OVALS IN 2 COLUMNS) ================= -->
+  <!-- Left Column Ovals: x=480, Right Column Ovals: x=960 -->
+
+  <!-- Customer Use Cases (Left Column) -->
+  <!-- UC-1: Browse Catalog -->
+  <ellipse cx="480" cy="130" rx="150" ry="22" class="oval" />
+  <text x="480" y="134" class="oval-text">Browse &amp; Compare Policy Catalog</text>
+
+  <!-- UC-2: Register External Policy -->
+  <ellipse cx="480" cy="185" rx="150" ry="22" class="oval" />
+  <text x="480" y="189" class="oval-text">Register External Third-Party Policy</text>
+
+  <!-- UC-3: Submit FNOL Claim -->
+  <ellipse cx="480" cy="240" rx="150" ry="22" class="oval" />
+  <text x="480" y="244" class="oval-text">Submit Digital Insurance Claim (FNOL)</text>
+
+  <!-- UC-4: Upload Proofs -->
+  <ellipse cx="480" cy="295" rx="150" ry="22" class="oval" />
+  <text x="480" y="299" class="oval-text">Upload Supporting Invoices &amp; Proofs</text>
+
+  <!-- UC-5: Track Status -->
+  <ellipse cx="480" cy="350" rx="150" ry="22" class="oval" />
+  <text x="480" y="354" class="oval-text">Track Claim Timeline &amp; Status</text>
+
+  <!-- UC-6: View Settlement Voucher -->
+  <ellipse cx="480" cy="405" rx="150" ry="22" class="oval" />
+  <text x="480" y="409" class="oval-text">View Settlement Payout Voucher</text>
+
+  <!-- Surveyor Use Cases (Left Column Bottom) -->
+  <!-- UC-13: Access Assigned Roster -->
+  <ellipse cx="480" cy="680" rx="150" ry="22" class="oval" />
+  <text x="480" y="684" class="oval-text">Access Assigned Inspection Roster</text>
+
+  <!-- UC-14: Physical Assessment -->
+  <ellipse cx="480" cy="745" rx="150" ry="22" class="oval" />
+  <text x="480" y="749" class="oval-text">Conduct Damage Inspection &amp; Photos</text>
+
+  <!-- UC-15: Submit Survey Report -->
+  <ellipse cx="480" cy="810" rx="150" ry="22" class="oval" />
+  <text x="480" y="814" class="oval-text">Submit Technical Survey &amp; Repair Estimate</text>
+
+  <!-- Officer Use Cases (Right Column Top) -->
+  <!-- UC-7: Work Queue -->
+  <ellipse cx="960" cy="130" rx="150" ry="22" class="oval" />
+  <text x="960" y="134" class="oval-text">Access Claims Adjudication Work Queue</text>
+
+  <!-- UC-8: OCR Audit -->
+  <ellipse cx="960" cy="185" rx="150" ry="22" class="oval" />
+  <text x="960" y="189" class="oval-text">Audit OCR Extracted Invoice Data</text>
+
+  <!-- UC-9: Evaluate Rules -->
+  <ellipse cx="960" cy="240" rx="150" ry="22" class="oval" />
+  <text x="960" y="244" class="oval-text">Evaluate Rule Compliance Scores</text>
+
+  <!-- UC-10: Request Docs / Assign Surveyor -->
+  <ellipse cx="960" cy="295" rx="150" ry="22" class="oval" />
+  <text x="960" y="299" class="oval-text">Request Missing Docs / Assign Surveyor</text>
+
+  <!-- UC-11: Recommend Escalation -->
+  <ellipse cx="960" cy="350" rx="150" ry="22" class="oval" />
+  <text x="960" y="354" class="oval-text">Formulate Adjudication Recommendation</text>
+
+  <!-- UC-12: Verify External Policies -->
+  <ellipse cx="960" cy="405" rx="150" ry="22" class="oval" />
+  <text x="960" y="409" class="oval-text">Audit External Policy Registrations</text>
+
+  <!-- Manager Use Cases (Right Column Middle) -->
+  <!-- UC-16: Review Escalations -->
+  <ellipse cx="960" cy="500" rx="150" ry="22" class="oval" />
+  <text x="960" y="504" class="oval-text">Review Escalations &amp; Survey Reports</text>
+
+  <!-- UC-17: Executive Adjudication -->
+  <ellipse cx="960" cy="555" rx="150" ry="22" class="oval" />
+  <text x="960" y="559" class="oval-text">Execute Decision (Approve / Reject)</text>
+
+  <!-- UC-18: Authorize Settlement -->
+  <ellipse cx="960" cy="610" rx="150" ry="22" class="oval" />
+  <text x="960" y="614" class="oval-text">Authorize Settlement Voucher &amp; Payout</text>
+
+  <!-- Admin Use Cases (Right Column Bottom) -->
+  <!-- UC-19: Policy Catalog -->
+  <ellipse cx="960" cy="730" rx="150" ry="22" class="oval" />
+  <text x="960" y="734" class="oval-text">Manage Underwriting Policy Catalog</text>
+
+  <!-- UC-20: Rule Config -->
+  <ellipse cx="960" cy="785" rx="150" ry="22" class="oval" />
+  <text x="960" y="789" class="oval-text">Configure Deterministic Rule Parameters</text>
+
+  <!-- UC-21: User Management -->
+  <ellipse cx="960" cy="840" rx="150" ry="22" class="oval" />
+  <text x="960" y="844" class="oval-text">Govern User Accounts &amp; RBAC Roles</text>
+
+  <!-- UC-22: Audit Log -->
+  <ellipse cx="960" cy="895" rx="150" ry="22" class="oval" />
+  <text x="960" y="899" class="oval-text">Inspect System Telemetry &amp; Audit Logs</text>
+
+  <!-- ================= ASSOCIATION LINES ================= -->
+  <!-- Customer Lines (from x=160, y=240) -->
+  <line x1="160" y1="240" x2="330" y2="130" class="assoc" />
+  <line x1="160" y1="240" x2="330" y2="185" class="assoc" />
+  <line x1="160" y1="240" x2="330" y2="240" class="assoc" />
+  <line x1="160" y1="240" x2="330" y2="295" class="assoc" />
+  <line x1="160" y1="240" x2="330" y2="350" class="assoc" />
+  <line x1="160" y1="240" x2="330" y2="405" class="assoc" />
+
+  <!-- Surveyor Lines (from x=160, y=740) -->
+  <line x1="160" y1="740" x2="330" y2="680" class="assoc" />
+  <line x1="160" y1="740" x2="330" y2="745" class="assoc" />
+  <line x1="160" y1="740" x2="330" y2="810" class="assoc" />
+
+  <!-- Officer Lines (from x=1280, y=200) -->
+  <line x1="1280" y1="200" x2="1110" y2="130" class="assoc" />
+  <line x1="1280" y1="200" x2="1110" y2="185" class="assoc" />
+  <line x1="1280" y1="200" x2="1110" y2="240" class="assoc" />
+  <line x1="1280" y1="200" x2="1110" y2="295" class="assoc" />
+  <line x1="1280" y1="200" x2="1110" y2="350" class="assoc" />
+  <line x1="1280" y1="200" x2="1110" y2="405" class="assoc" />
+
+  <!-- Manager Lines (from x=1280, y=520) -->
+  <line x1="1280" y1="520" x2="1110" y2="500" class="assoc" />
+  <line x1="1280" y1="520" x2="1110" y2="555" class="assoc" />
+  <line x1="1280" y1="520" x2="1110" y2="610" class="assoc" />
+
+  <!-- Admin Lines (from x=1280, y=820) -->
+  <line x1="1280" y1="820" x2="1110" y2="730" class="assoc" />
+  <line x1="1280" y1="820" x2="1110" y2="785" class="assoc" />
+  <line x1="1280" y1="820" x2="1110" y2="840" class="assoc" />
+  <line x1="1280" y1="820" x2="1110" y2="895" class="assoc" />
+
+  <!-- Cross-role include/extend associations between use cases inside boundary -->
+  <!-- UC-3 extends UC-4 -->
+  <line x1="480" y1="262" x2="480" y2="273" class="assoc" stroke-dasharray="3,3" />
+
+  <!-- Legend in Footer -->
+  <g transform="translate(480, 995)">
+    <rect width="480" height="40" fill="#fafafa" stroke="#000000" stroke-width="1" rx="4" />
+    <text x="240" y="24" font-family="Segoe UI" font-size="11px" font-weight="bold" fill="#000000" text-anchor="middle">
+      UML Standard: Stick Figure Actors | System Boundary | Ovals (Use Cases) | Direct Associations
+    </text>
+  </g>
+
+</svg>

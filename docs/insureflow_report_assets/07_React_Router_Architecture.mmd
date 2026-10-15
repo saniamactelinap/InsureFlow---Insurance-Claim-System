@@ -1,0 +1,60 @@
+graph TD
+  classDef default fill:#ffffff,stroke:#000000,stroke-width:1.5px,color:#000000;
+
+  ROOT["&lt;BrowserRouter&gt; (App.jsx)"]
+
+  subgraph PUB["Public Routes (Unauthenticated)"]
+    P1["/ -> HomePage"]
+    P2["/login -> LoginPage"]
+    P3["/register -> RegisterPage"]
+    P4["/catalog -> ProductCatalogPage"]
+    P5["/catalog/:id -> ProductDetailPage"]
+    P6["/about -> AboutPage"]
+    P7["/faq -> FAQPage"]
+    P8["/contact -> ContactPage"]
+    P9["* -> NotFoundPage (404)"]
+  end
+
+  subgraph CUST["Customer Workspace (Role: CUSTOMER)"]
+    C1["/customer/dashboard"]
+    C2["/customer/claims"]
+    C3["/customer/claims/new"]
+    C4["/customer/claims/:id"]
+    C5["/customer/policies"]
+    C6["/customer/settlements"]
+  end
+
+  subgraph OFF["Officer Workspace (Role: OFFICER)"]
+    O1["/officer/queue"]
+    O2["/officer/adjudicate/:id"]
+    O3["/officer/documents"]
+    O4["/officer/policies"]
+  end
+
+  subgraph SURV["Surveyor Workspace (Role: SURVEYOR)"]
+    S1["/surveyor/roster"]
+    S2["/surveyor/inspect/:id"]
+    S3["/surveyor/reports"]
+  end
+
+  subgraph MGR["Manager Workspace (Role: MANAGER)"]
+    M1["/manager/escalations"]
+    M2["/manager/review/:id"]
+    M3["/manager/settlements"]
+    M4["/manager/analytics"]
+  end
+
+  subgraph ADM["Admin Workspace (Role: ADMIN)"]
+    A1["/admin/catalog"]
+    A2["/admin/catalog/new"]
+    A3["/admin/rules"]
+    A4["/admin/users"]
+    A5["/admin/audit-logs"]
+  end
+
+  ROOT --> PUB
+  ROOT --> CUST
+  ROOT --> OFF
+  ROOT --> SURV
+  ROOT --> MGR
+  ROOT --> ADM

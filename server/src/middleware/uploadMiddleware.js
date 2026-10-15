@@ -2,7 +2,11 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 
-const uploadDirectory = process.env.UPLOAD_DIR || 'uploads';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const uploadDirectory = process.env.UPLOAD_DIR || path.resolve(__dirname, '../../uploads');
 
 // Ensure uploads directory exists
 if (!fs.existsSync(uploadDirectory)) {

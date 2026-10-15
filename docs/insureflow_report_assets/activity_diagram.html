@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body {
+    margin: 0; padding: 20px; font-family: 'Segoe UI', Arial, sans-serif;
+    background: #ffffff; color: #0f172a;
+  }
+  .container {
+    width: 1360px; margin: 0 auto; border: 1px solid #cbd5e1; border-radius: 8px;
+    padding: 24px; background: #ffffff;
+  }
+  .title {
+    text-align: center; font-size: 22px; font-weight: 700; color: #1e3a8a; margin-bottom: 2px;
+  }
+  .subtitle {
+    text-align: center; font-size: 13px; color: #64748b; margin-bottom: 24px;
+  }
+  .flow {
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+  }
+  .circle-start {
+    width: 32px; height: 32px; background: #0f172a; border-radius: 50%;
+  }
+  .circle-end {
+    width: 34px; height: 34px; border: 3px solid #0f172a; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .circle-end-inner {
+    width: 20px; height: 20px; background: #0f172a; border-radius: 50%;
+  }
+  .act-node {
+    background: #ffffff; border: 2px solid #2563eb; border-radius: 18px;
+    padding: 10px 24px; font-size: 13px; font-weight: 600; color: #1e3a8a;
+    text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); min-width: 320px;
+  }
+  .decision-diamond {
+    width: 140px; height: 70px; background: #fef3c7; border: 2px solid #d97706;
+    transform: rotate(45deg); display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin: 15px 0;
+  }
+  .decision-text {
+    transform: rotate(-45deg); font-size: 11px; font-weight: 700; color: #92400e; text-align: center;
+  }
+  .branch-row {
+    display: flex; justify-content: space-around; width: 100%; gap: 20px;
+  }
+  .branch-col {
+    display: flex; flex-direction: column; align-items: center; gap: 10px; flex: 1;
+    background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px dashed #cbd5e1;
+  }
+  .branch-label {
+    font-size: 11px; font-weight: 700; color: #0284c7; text-transform: uppercase;
+  }
+  .arrow-v { color: #64748b; font-size: 16px; font-weight: bold; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="title">InsureFlow — UML Activity Diagram</div>
+  <div class="subtitle">Claim Lifecycle Control Flow, Automated Evaluation Gates & Multi-Stage Human Decisions</div>
+
+  <div class="flow">
+    <div class="circle-start" title="Initial State"></div>
+    <div class="arrow-v">▼</div>
+
+    <div class="act-node">Customer Files Claim with Supporting Documents & Incident Proof</div>
+    <div class="arrow-v">▼</div>
+
+    <div class="act-node">Document Ingestion & Asynchronous OCR Text / Entity Extraction (Tesseract + PDF-Parse)</div>
+    <div class="arrow-v">▼</div>
+
+    <div class="act-node">Deterministic Rule Engine Evaluates 7 Compliance Checks (Coverage, Dates, Docs, Duplicates)</div>
+    <div class="arrow-v">▼</div>
+
+    <div class="branch-row">
+      <!-- Path 1: Missing Docs -->
+      <div class="branch-col">
+        <div class="branch-label">[Missing Mandatory Documents]</div>
+        <div class="act-node" style="border-color: #f59e0b; color: #b45309;">Transition: DOCUMENTS_REQUIRED</div>
+        <div class="arrow-v">▼</div>
+        <div class="act-node">Customer Re-Uploads Missing Files</div>
+      </div>
+
+      <!-- Path 2: High Value or Vehicle/Property -->
+      <div class="branch-col">
+        <div class="branch-label">[Amount ≥ ₹5,000 OR Vehicle/Property]</div>
+        <div class="act-node" style="border-color: #8b5cf6; color: #6d28d9;">Assign Technical Surveyor</div>
+        <div class="arrow-v">▼</div>
+        <div class="act-node">Surveyor Conducts Physical Inspection & Submits Damage Report</div>
+      </div>
+
+      <!-- Path 3: Standard Claim -->
+      <div class="branch-col">
+        <div class="branch-label">[Standard Claim / Health]</div>
+        <div class="act-node" style="border-color: #10b981; color: #047857;">Officer Direct Work Queue Pickup</div>
+        <div class="arrow-v">▼</div>
+        <div class="act-node">Officer Audits OCR Match & Rule Flags</div>
+      </div>
+    </div>
+
+    <div class="arrow-v">▼</div>
+    <div class="act-node">Officer Formulates Recommendation (APPROVE / REJECT) & Escalates to Manager</div>
+    <div class="arrow-v">▼</div>
+
+    <div class="branch-row" style="max-width: 900px;">
+      <div class="branch-col" style="border-color: #ef4444;">
+        <div class="branch-label" style="color: #ef4444;">[Manager Rejects]</div>
+        <div class="act-node" style="border-color: #ef4444; color: #b91c1c;">Status: REJECTED</div>
+        <div class="arrow-v">▼</div>
+        <div class="act-node">Notification Dispatched to Customer with Rejection Reason</div>
+      </div>
+
+      <div class="branch-col" style="border-color: #10b981;">
+        <div class="branch-label" style="color: #10b981;">[Manager Approves]</div>
+        <div class="act-node" style="border-color: #10b981; color: #047857;">Status: SETTLEMENT_PENDING</div>
+        <div class="arrow-v">▼</div>
+        <div class="act-node">Generate Settlement Record (SET-YYYYMMDD-XXXX)</div>
+        <div class="arrow-v">▼</div>
+        <div class="act-node">Finance Processes Bank Transfer & Marks SETTLED</div>
+      </div>
+    </div>
+
+    <div class="arrow-v">▼</div>
+    <div class="act-node">Claim Closed & Audit Log Finalized</div>
+    <div class="arrow-v">▼</div>
+
+    <div class="circle-end" title="Final State"><div class="circle-end-inner"></div></div>
+  </div>
+</div>
+</body>
+</html>

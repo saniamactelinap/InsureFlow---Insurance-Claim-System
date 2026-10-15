@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body {
+    margin: 0; padding: 20px; font-family: 'Segoe UI', Arial, sans-serif;
+    background: #ffffff; color: #0f172a;
+  }
+  .container {
+    width: 1360px; margin: 0 auto; border: 1px solid #cbd5e1; border-radius: 8px;
+    padding: 24px; background: #ffffff;
+  }
+  .title {
+    text-align: center; font-size: 22px; font-weight: 700; color: #1e3a8a; margin-bottom: 2px;
+  }
+  .subtitle {
+    text-align: center; font-size: 13px; color: #64748b; margin-bottom: 24px;
+  }
+  .root-node {
+    background: #1e3a8a; color: white; padding: 10px 24px; border-radius: 6px;
+    font-size: 14px; font-weight: 700; text-align: center; width: 280px; margin: 0 auto 20px auto;
+  }
+  .portals-grid {
+    display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px;
+  }
+  .portal-column {
+    background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 6px;
+    padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .portal-header {
+    font-size: 13px; font-weight: 700; text-align: center; padding-bottom: 8px;
+    margin-bottom: 10px; border-bottom: 2px solid #3b82f6; color: #1e3a8a;
+  }
+  .route-item {
+    background: white; border: 1px solid #e2e8f0; border-radius: 4px;
+    padding: 6px 8px; margin-bottom: 6px; font-size: 11px;
+  }
+  .route-path {
+    font-family: monospace; font-size: 10px; color: #0284c7; display: block;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="title">InsureFlow — React Router v6 Navigation Tree</div>
+  <div class="subtitle">Complete Hierarchy of 33 Client Routes across Public, Protected Customer & Staff Workspaces</div>
+
+  <div class="root-node">App Root &lt;Routes&gt;</div>
+
+  <div class="portals-grid">
+    <!-- Public Portal -->
+    <div class="portal-column">
+      <div class="portal-header">Public Portal (11)</div>
+      <div class="route-item"><b>Landing Page</b><span class="route-path">/</span></div>
+      <div class="route-item"><b>Policy Catalog</b><span class="route-path">/policies</span></div>
+      <div class="route-item"><b>Policy Detail</b><span class="route-path">/policies/:id</span></div>
+      <div class="route-item"><b>Compare Plans</b><span class="route-path">/compare</span></div>
+      <div class="route-item"><b>How Claims Work</b><span class="route-path">/how-it-works</span></div>
+      <div class="route-item"><b>About Platform</b><span class="route-path">/about</span></div>
+      <div class="route-item"><b>Help & FAQ</b><span class="route-path">/faq</span></div>
+      <div class="route-item"><b>Contact Us</b><span class="route-path">/contact</span></div>
+      <div class="route-item"><b>User Sign In</b><span class="route-path">/login</span></div>
+      <div class="route-item"><b>Registration</b><span class="route-path">/register</span></div>
+      <div class="route-item"><b>Pass Recovery</b><span class="route-path">/forgot-password</span></div>
+    </div>
+
+    <!-- Customer Portal -->
+    <div class="portal-column">
+      <div class="portal-header">Customer Portal (7)</div>
+      <div class="route-item"><b>Dashboard</b><span class="route-path">/customer/dashboard</span></div>
+      <div class="route-item"><b>My Policies</b><span class="route-path">/customer/policies</span></div>
+      <div class="route-item"><b>Register External</b><span class="route-path">/customer/policies/...</span></div>
+      <div class="route-item"><b>File New Claim</b><span class="route-path">/customer/claims/new</span></div>
+      <div class="route-item"><b>Claims History</b><span class="route-path">/customer/claims</span></div>
+      <div class="route-item"><b>Claim Timeline</b><span class="route-path">/customer/claims/:id</span></div>
+      <div class="route-item"><b>Settlements</b><span class="route-path">/customer/settlements</span></div>
+    </div>
+
+    <!-- Officer Portal -->
+    <div class="portal-column">
+      <div class="portal-header">Officer Portal (4)</div>
+      <div class="route-item"><b>Dashboard</b><span class="route-path">/officer/dashboard</span></div>
+      <div class="route-item"><b>Claims Queue</b><span class="route-path">/officer/queue</span></div>
+      <div class="route-item"><b>Adjudication</b><span class="route-path">/officer/claims/:id</span></div>
+      <div class="route-item"><b>Audit Policies</b><span class="route-path">/officer/external-p...</span></div>
+    </div>
+
+    <!-- Surveyor Portal -->
+    <div class="portal-column">
+      <div class="portal-header">Surveyor Portal (3)</div>
+      <div class="route-item"><b>Dashboard</b><span class="route-path">/surveyor/dashboard</span></div>
+      <div class="route-item"><b>Inspection Queue</b><span class="route-path">/surveyor/inspections</span></div>
+      <div class="route-item"><b>Damage Workspace</b><span class="route-path">/surveyor/inspec.../:id</span></div>
+    </div>
+
+    <!-- Manager Portal -->
+    <div class="portal-column">
+      <div class="portal-header">Manager Portal (4)</div>
+      <div class="route-item"><b>Dashboard</b><span class="route-path">/manager/dashboard</span></div>
+      <div class="route-item"><b>Decisions List</b><span class="route-path">/manager/decisions</span></div>
+      <div class="route-item"><b>Claim Approval</b><span class="route-path">/manager/claims/:id</span></div>
+      <div class="route-item"><b>Settlement Auth</b><span class="route-path">/manager/settlements</span></div>
+    </div>
+
+    <!-- Admin Suite -->
+    <div class="portal-column">
+      <div class="portal-header">Admin Suite (5)</div>
+      <div class="route-item"><b>Dashboard</b><span class="route-path">/admin/dashboard</span></div>
+      <div class="route-item"><b>User Management</b><span class="route-path">/admin/users</span></div>
+      <div class="route-item"><b>Product Catalog</b><span class="route-path">/admin/policies</span></div>
+      <div class="route-item"><b>Rule Engine</b><span class="route-path">/admin/rules</span></div>
+      <div class="route-item"><b>Audit Trail</b><span class="route-path">/admin/audit-logs</span></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

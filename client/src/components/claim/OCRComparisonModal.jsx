@@ -53,28 +53,49 @@ export const OCRComparisonModal = ({ isOpen, onClose, ocrJob, claim, onUpdated }
     confidenceColor = 'text-amber-600 bg-amber-50 border-amber-200';
   }
 
+  const getEngineLabel = (provider) => {
+    switch (provider) {
+      case 'pdf_parse': return 'PDF Text Parser';
+      case 'scanned_pdf_ocr': return 'Scanned PDF OCR (Tesseract)';
+      case 'tesseract': return 'Tesseract OCR Engine';
+      default: return provider ? provider.toUpperCase() : 'OCR Engine';
+    }
+  };
+
   const fields = ocrJob.correctedFields && Object.keys(ocrJob.correctedFields).length > 0
     ? { ...ocrJob.extractedFields, ...ocrJob.correctedFields }
     : ocrJob.extractedFields;
 
+  const detectedAmt = fields?.detectedAmount != null && fields?.detectedAmount !== '' ? Number(fields.detectedAmount) : null;
+  const hasAmountMismatch = detectedAmt !== null && claim?.requestedAmount && Math.abs(claim.requestedAmount - detectedAmt) > 1;
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Intelligent Document Extraction (OCR) Review" maxWidth="max-w-4xl">
       <div className="space-y-6">
-        {/* Top Header Banner with Confidence */}
+        {/* Top Header Banner with Confidence & Status */}
         <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-blue-600/10 text-blue-600 flex items-center justify-center">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <div className="font-bold text-slate-900 text-sm">Engine: {ocrJob.provider?.toUpperCase()}</div>
+              <div className="font-bold text-slate-900 text-sm">Engine: {getEngineLabel(ocrJob.provider)}</div>
               <div className="text-xs text-slate-500">Processed in {ocrJob.processingDurationMs || 350}ms</div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            {ocrJob.reviewStatus && (
+              <div className={`px-2.5 py-1.5 rounded-lg border text-xs font-bold ${
+                ocrJob.reviewStatus === 'VERIFIED'
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                  : 'bg-amber-50 text-amber-700 border-amber-200'
+              }`}>
+                {ocrJob.reviewStatus === 'VERIFIED' ? 'Verified Extraction' : 'Needs Officer Review'}
+              </div>
+            )}
             <div className={`px-3 py-1.5 rounded-lg border font-bold text-xs flex items-center gap-1.5 ${confidenceColor}`}>
-              <span>Confidence Score: {confidence}%</span>
+              <span>Confidence: {confidence}%</span>
             </div>
             <button
               onClick={() => setIsEditing(!isEditing)}
@@ -85,6 +106,16 @@ export const OCRComparisonModal = ({ isOpen, onClose, ocrJob, claim, onUpdated }
             </button>
           </div>
         </div>
+
+        {/* Amount Mismatch Banner */}
+        {hasAmountMismatch && (
+          <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-900 flex items-start gap-2">
+            <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <span className="font-bold">Claim Discrepancy Detected:</span> Customer filed for {formatINR(claim.requestedAmount)}, but document bill total is {formatINR(detectedAmt)} (variance: {formatINR(Math.abs(claim.requestedAmount - detectedAmt))}).
+            </div>
+          </div>
+        )}
 
         {/* Comparison Grid: Customer vs OCR */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -129,9 +160,8 @@ export const OCRComparisonModal = ({ isOpen, onClose, ocrJob, claim, onUpdated }
                     type="number"
                     step="0.01"
                     value={formData.detectedAmount}
-                    onChange={(e) => setFormData({ ...formData, detectedAmount: Number(e.target.value) })}
+                    onChange={(e) => setFormData({ ...formData, detectedAmount: e.target.value === '' ? '' : Number(e.target.value) })}
                     className="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs"
-                    required
                   />
                 </div>
                 <div>
@@ -196,25 +226,41 @@ export const OCRComparisonModal = ({ isOpen, onClose, ocrJob, claim, onUpdated }
                 <div className="flex justify-between py-1.5 border-b border-slate-100">
                   <span className="text-slate-500">Detected Total Amount:</span>
                   <span className="font-bold text-slate-900">
-                    {formatINR(fields?.detectedAmount || 0)}
+                    {detectedAmt !== null ? (
+                      formatINR(detectedAmt)
+                    ) : (
+                      <span className="text-slate-400 font-normal italic">Not detected</span>
+                    )}
                   </span>
                 </div>
                 <div className="flex justify-between py-1.5 border-b border-slate-100">
                   <span className="text-slate-500">Detected Date:</span>
-                  <span className="font-semibold text-slate-900">{fields?.detectedDate || 'Not detected'}</span>
+                  <span className="font-semibold text-slate-900">{fields?.detectedDate || <span className="text-slate-400 font-normal italic">Not detected</span>}</span>
                 </div>
                 <div className="flex justify-between py-1.5 border-b border-slate-100">
                   <span className="text-slate-500">Invoice / Bill #:</span>
-                  <span className="font-mono text-slate-900">{fields?.invoiceOrBillNumber || 'Not detected'}</span>
+                  <span className="font-mono text-slate-900">{fields?.invoiceOrBillNumber || <span className="text-slate-400 font-normal italic">Not detected</span>}</span>
                 </div>
                 <div className="flex justify-between py-1.5 border-b border-slate-100">
                   <span className="text-slate-500">Issuer / Hospital / Garage:</span>
-                  <span className="font-semibold text-slate-900">{fields?.issuerName || 'Not detected'}</span>
+                  <span className="font-semibold text-slate-900">{fields?.issuerName || <span className="text-slate-400 font-normal italic">Not detected</span>}</span>
                 </div>
                 <div className="flex justify-between py-1.5 border-b border-slate-100">
-                  <span className="text-slate-500">Policy Number Mention:</span>
-                  <span className="font-mono text-slate-900">{fields?.policyNumberFound || 'Not detected'}</span>
+                  <span className="text-slate-500">Patient / Insured Name:</span>
+                  <span className="font-semibold text-slate-900">{fields?.patientName || fields?.patientOrVehicleId || <span className="text-slate-400 font-normal italic">Not detected</span>}</span>
                 </div>
+                {fields?.subtotal != null && (
+                  <div className="flex justify-between py-1.5 border-b border-slate-100">
+                    <span className="text-slate-500">Subtotal:</span>
+                    <span className="font-semibold text-slate-900">{formatINR(fields.subtotal)}</span>
+                  </div>
+                )}
+                {fields?.taxAmount != null && (
+                  <div className="flex justify-between py-1.5 border-b border-slate-100">
+                    <span className="text-slate-500">Taxes:</span>
+                    <span className="font-semibold text-slate-900">{formatINR(fields.taxAmount)}</span>
+                  </div>
+                )}
               </div>
             )}
           </div>

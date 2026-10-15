@@ -49,9 +49,11 @@ export const createApp = () => {
   app.use(express.json({ limit: '15mb' }));
   app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 
-  // Static uploads serving
-  const uploadDir = path.resolve(__dirname, '../../uploads');
-  app.use('/uploads', express.static(uploadDir));
+  // Static uploads serving (both server/uploads and root uploads)
+  const serverUploadDir = path.resolve(__dirname, '../uploads');
+  const rootUploadDir = path.resolve(__dirname, '../../uploads');
+  app.use('/uploads', express.static(serverUploadDir));
+  app.use('/uploads', express.static(rootUploadDir));
 
   // Health check endpoint
   app.get('/api/health', (req, res) => {

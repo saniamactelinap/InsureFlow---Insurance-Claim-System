@@ -1,0 +1,64 @@
+graph LR
+  classDef default fill:#ffffff,stroke:#000000,stroke-width:1.5px,color:#000000;
+
+  Cust["fa:fa-user Customer<br/>(Policyholder)"]
+  Surv["fa:fa-search Field Surveyor<br/>(Loss Assessor)"]
+  Off["fa:fa-clipboard Insurance Officer<br/>(Adjudicator)"]
+  Mgr["fa:fa-balance-scale Claims Manager<br/>(Executive)"]
+  Admin["fa:fa-cog Administrator<br/>(System Admin)"]
+
+  subgraph InsureFlow["InsureFlow System Boundary"]
+    UC1(["UC-01: Browse & Compare Policies"])
+    UC2(["UC-02: Register External Policy"])
+    UC3(["UC-03: Submit Digital Claim (FNOL)"])
+    UC4(["UC-04: Upload Supporting Invoices"])
+    UC5(["UC-05: Track Claim Timeline & Status"])
+    UC6(["UC-06: View Settlement Voucher"])
+
+    UC7(["UC-07: Access Claims Work Queue"])
+    UC8(["UC-08: Audit OCR Extracted Data"])
+    UC9(["UC-09: Evaluate Rule Compliance"])
+    UC10(["UC-10: Request Docs / Assign Surveyor"])
+    UC11(["UC-11: Recommend Escalation"])
+    UC12(["UC-12: Audit External Policies"])
+
+    UC13(["UC-13: Access Inspection Roster"])
+    UC14(["UC-14: Conduct Damage Inspection"])
+    UC15(["UC-15: Submit Technical Survey Report"])
+
+    UC16(["UC-16: Review Escalated Claims"])
+    UC17(["UC-17: Executive Adjudication"])
+    UC18(["UC-18: Authorize Settlement Payout"])
+
+    UC19(["UC-19: Manage Policy Catalog"])
+    UC20(["UC-20: Configure Rule Parameters"])
+    UC21(["UC-21: Govern User Roles & RBAC"])
+    UC22(["UC-22: Inspect System Audit Logs"])
+  end
+
+  Cust --- UC1
+  Cust --- UC2
+  Cust --- UC3
+  Cust --- UC4
+  Cust --- UC5
+  Cust --- UC6
+
+  Surv --- UC13
+  Surv --- UC14
+  Surv --- UC15
+
+  Off --- UC7
+  Off --- UC8
+  Off --- UC9
+  Off --- UC10
+  Off --- UC11
+  Off --- UC12
+
+  Mgr --- UC16
+  Mgr --- UC17
+  Mgr --- UC18
+
+  Admin --- UC19
+  Admin --- UC20
+  Admin --- UC21
+  Admin --- UC22

@@ -1,0 +1,115 @@
+@startuml 02_UML_Domain_Model
+!theme plain
+skinparam monochrome true
+skinparam defaultFontName "Consolas"
+skinparam classAttributeIconSize 0
+
+title Figure 2: UML Domain Model & Class Diagram of InsureFlow
+
+class User <<Mongoose Model>> {
+  + _id: ObjectId [PK]
+  + name: String
+  + email: String [UNIQUE]
+  + password: String
+  + role: Enum (5 Roles)
+  + department: String
+  + phone: String
+  + isActive: Boolean
+  --
+  + comparePassword(pwd): Boolean
+  + toJSON(): Omit Password
+}
+
+class PolicyProduct <<Mongoose Model>> {
+  + _id: ObjectId [PK]
+  + productName: String
+  + insurer: String
+  + category: Enum (HEALTH, VEHICLE, PROPERTY)
+  + planCode: String [UNIQUE]
+  + coverageLimit: Number
+  + deductible: Number
+  + annualPremium: Number
+  + isPublished: Boolean
+  --
+  + validatePlanCode(): Boolean
+}
+
+class CustomerPolicy <<Mongoose Model>> {
+  + _id: ObjectId [PK]
+  + customer: Ref<User>
+  + product: Ref<PolicyProduct>
+  + policySource: Enum (PLATFORM, EXTERNAL)
+  + policyNumber: String [UNIQUE]
+  + coverageAmount: Number
+  + startDate: Date
+  + endDate: Date
+  + verificationStatus: Enum
+  --
+  + isCoveredOn(date): Boolean
+}
+
+class Claim <<Mongoose Model>> {
+  + _id: ObjectId [PK]
+  + claimReference: String [UNIQUE]
+  + customer: Ref<User>
+  + customerPolicy: Ref<CustomerPolicy>
+  + assignedOfficer: Ref<User>
+  + assignedSurveyor: Ref<User>
+  + category: Enum
+  + requestedAmount: Number
+  + approvedAmount: Number
+  + status: Enum (15 States)
+  + isHighValueClaim: Boolean
+  --
+  + canTransitionTo(target, role): Boolean
+}
+
+class ClaimDocument <<Mongoose Model>> {
+  + _id: ObjectId [PK]
+  + claim: Ref<Claim>
+  + uploadedBy: Ref<User>
+  + documentCategory: Enum
+  + fileName: String
+  + mimeType: String
+  + sizeBytes: Number
+}
+
+class OCRJob <<Mongoose Model>> {
+  + _id: ObjectId [PK]
+  + claimDocument: Ref<ClaimDocument>
+  + claim: Ref<Claim>
+  + status: Enum
+  + extractedText: String
+  + confidenceScore: Number
+}
+
+class SurveyReport <<Mongoose Model>> {
+  + _id: ObjectId [PK]
+  + claim: Ref<Claim>
+  + surveyor: Ref<User>
+  + inspectionDate: Date
+  + damageAssessment: String
+  + estimatedRepairCost: Number
+  + isClaimValid: Boolean
+}
+
+class Settlement <<Mongoose Model>> {
+  + _id: ObjectId [PK]
+  + settlementReference: String [UNIQUE]
+  + claim: Ref<Claim>
+  + customer: Ref<User>
+  + approvedAmount: Number
+  + paymentMethod: Enum
+  + status: Enum (PENDING, SETTLED)
+  + authorizedBy: Ref<User>
+}
+
+User "1" -- "0..*" CustomerPolicy : owns >
+PolicyProduct "1" -- "0..*" CustomerPolicy : instantiates >
+CustomerPolicy "1" -- "0..*" Claim : covers >
+User "1" -- "0..*" Claim : files >
+Claim "1" -- "1..*" ClaimDocument : contains >
+ClaimDocument "1" -- "1" OCRJob : analyzed by >
+Claim "1" -- "0..1" SurveyReport : assessed by >
+Claim "1" -- "0..1" Settlement : generates >
+@enduml

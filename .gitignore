@@ -1,7 +1,18 @@
-﻿# Dependencies
+# Dependencies
 node_modules/
+**/node_modules/
 client/node_modules/
 server/node_modules/
+docs/report-generator/node_modules/
+
+# User uploads and binary assets
+uploads/
+**/uploads/
+server/uploads/
+*.traineddata
+server/*.traineddata
+_temp_*
+**/temp_*.docx
 
 # Environment secrets
 .env

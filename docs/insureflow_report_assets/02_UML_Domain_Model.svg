@@ -1,0 +1,238 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1380" height="960" viewBox="0 0 1380 960">
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .border { fill: none; stroke: #000000; stroke-width: 2; }
+      .title { font-family: 'Segoe UI', Arial, sans-serif; font-size: 20px; font-weight: bold; fill: #000000; text-anchor: middle; }
+      .subtitle { font-family: 'Segoe UI', Arial, sans-serif; font-size: 12px; fill: #333333; text-anchor: middle; font-style: italic; }
+      .class-box { fill: #ffffff; stroke: #000000; stroke-width: 1.5; }
+      .class-header { fill: #f1f5f9; stroke: #000000; stroke-width: 1.5; }
+      .stereo { font-family: 'Segoe UI', Arial, sans-serif; font-size: 9px; fill: #444444; font-style: italic; text-anchor: middle; }
+      .cname { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; font-weight: bold; fill: #000000; text-anchor: middle; }
+      .attr { font-family: 'Consolas', monospace; font-size: 10px; fill: #000000; }
+      .meth { font-family: 'Consolas', monospace; font-size: 10px; fill: #000000; }
+      .divider { stroke: #000000; stroke-width: 1; }
+      .assoc { stroke: #000000; stroke-width: 1.5; fill: none; }
+      .multi { font-family: 'Segoe UI', Arial, sans-serif; font-size: 10px; fill: #000000; font-weight: bold; }
+    </style>
+  </defs>
+
+  <rect width="1380" height="960" class="bg" />
+  <rect x="15" y="15" width="1350" height="930" class="border" />
+
+  <text x="690" y="48" class="title">FIGURE 2: UML DOMAIN MODEL &amp; CLASS DIAGRAM OF INSUREFLOW</text>
+  <text x="690" y="68" class="subtitle">Structural Specification of Core Mongoose Schemas, Persistent Attributes, Schema Operations, and Entity Associations</text>
+
+  <!-- Class 1: User -->
+  <g transform="translate(40, 90)">
+    <rect width="280" height="230" class="class-box" />
+    <rect width="280" height="36" class="class-header" />
+    <text x="140" y="16" class="stereo">&lt;&lt;Mongoose Model&gt;&gt;</text>
+    <text x="140" y="30" class="cname">User</text>
+    <text x="10" y="52" class="attr">+ _id: ObjectId [PK]</text>
+    <text x="10" y="68" class="attr">+ name: String</text>
+    <text x="10" y="84" class="attr">+ email: String [UNIQUE]</text>
+    <text x="10" y="100" class="attr">+ password: String (Bcrypt Hash)</text>
+    <text x="10" y="116" class="attr">+ role: Enum (5 User Roles)</text>
+    <text x="10" y="132" class="attr">+ department: String</text>
+    <text x="10" y="148" class="attr">+ phone: String</text>
+    <text x="10" y="164" class="attr">+ isActive: Boolean</text>
+    <line x1="0" y1="174" x2="280" y2="174" class="divider" />
+    <text x="10" y="192" class="meth">+ comparePassword(pwd): Boolean</text>
+    <text x="10" y="208" class="meth">+ pre('save'): Hash Password</text>
+    <text x="10" y="224" class="meth">+ toJSON(): Omit Password</text>
+  </g>
+
+  <!-- Class 2: PolicyProduct -->
+  <g transform="translate(370, 90)">
+    <rect width="290" height="230" class="class-box" />
+    <rect width="290" height="36" class="class-header" />
+    <text x="145" y="16" class="stereo">&lt;&lt;Mongoose Model&gt;&gt;</text>
+    <text x="145" y="30" class="cname">PolicyProduct</text>
+    <text x="10" y="52" class="attr">+ _id: ObjectId [PK]</text>
+    <text x="10" y="68" class="attr">+ productName: String</text>
+    <text x="10" y="84" class="attr">+ insurer: String</text>
+    <text x="10" y="100" class="attr">+ category: Enum (HEALTH/VEH/PROP)</text>
+    <text x="10" y="116" class="attr">+ planCode: String [UNIQUE]</text>
+    <text x="10" y="132" class="attr">+ coverageLimit: Number</text>
+    <text x="10" y="148" class="attr">+ deductible: Number</text>
+    <text x="10" y="164" class="attr">+ annualPremium: Number</text>
+    <text x="10" y="180" class="attr">+ isPublished: Boolean</text>
+    <line x1="0" y1="190" x2="290" y2="190" class="divider" />
+    <text x="10" y="208" class="meth">+ validatePlanCode(): Boolean</text>
+    <text x="10" y="224" class="meth">+ calculatePremium(): Number</text>
+  </g>
+
+  <!-- Class 3: CustomerPolicy -->
+  <g transform="translate(710, 90)">
+    <rect width="300" height="230" class="class-box" />
+    <rect width="300" height="36" class="class-header" />
+    <text x="150" y="16" class="stereo">&lt;&lt;Mongoose Model&gt;&gt;</text>
+    <text x="150" y="30" class="cname">CustomerPolicy</text>
+    <text x="10" y="52" class="attr">+ _id: ObjectId [PK]</text>
+    <text x="10" y="68" class="attr">+ customer: Ref&lt;User&gt; [FK]</text>
+    <text x="10" y="84" class="attr">+ product: Ref&lt;PolicyProduct&gt; [FK]</text>
+    <text x="10" y="100" class="attr">+ policySource: Enum (PLATFORM/EXT)</text>
+    <text x="10" y="116" class="attr">+ policyNumber: String [UNIQUE]</text>
+    <text x="10" y="132" class="attr">+ insurerName: String</text>
+    <text x="10" y="148" class="attr">+ coverageAmount: Number</text>
+    <text x="10" y="164" class="attr">+ startDate: Date</text>
+    <text x="10" y="180" class="attr">+ endDate: Date</text>
+    <line x1="0" y1="190" x2="300" y2="190" class="divider" />
+    <text x="10" y="208" class="meth">+ isCoveredOn(date): Boolean</text>
+    <text x="10" y="224" class="meth">+ getRemainingLimit(): Number</text>
+  </g>
+
+  <!-- Class 4: ConfigurableRule -->
+  <g transform="translate(1060, 90)">
+    <rect width="280" height="230" class="class-box" />
+    <rect width="280" height="36" class="class-header" />
+    <text x="140" y="16" class="stereo">&lt;&lt;Mongoose Model&gt;&gt;</text>
+    <text x="140" y="30" class="cname">ConfigurableRule</text>
+    <text x="10" y="52" class="attr">+ _id: ObjectId [PK]</text>
+    <text x="10" y="68" class="attr">+ ruleId: String [UNIQUE]</text>
+    <text x="10" y="84" class="attr">+ ruleName: String</text>
+    <text x="10" y="100" class="attr">+ category: Enum</text>
+    <text x="10" y="116" class="attr">+ isEnabled: Boolean</text>
+    <text x="10" y="132" class="attr">+ severity: Enum (INFO/WARN/CRIT)</text>
+    <text x="10" y="148" class="attr">+ parameters: Object</text>
+    <line x1="0" y1="160" x2="280" y2="160" class="divider" />
+    <text x="10" y="180" class="meth">+ evaluate(claim, policy): Result</text>
+    <text x="10" y="198" class="meth">+ toggleActiveStatus(): Boolean</text>
+    <text x="10" y="216" class="meth">+ updateParameters(cfg): Object</text>
+  </g>
+
+  <!-- Class 5: Claim (Central Entity) -->
+  <g transform="translate(470, 380)">
+    <rect width="360" height="280" class="class-box" />
+    <rect width="360" height="36" class="class-header" />
+    <text x="180" y="16" class="stereo">&lt;&lt;Mongoose Model (Central)&gt;&gt;</text>
+    <text x="180" y="30" class="cname">Claim</text>
+    <text x="10" y="52" class="attr">+ _id: ObjectId [PK]</text>
+    <text x="10" y="68" class="attr">+ claimReference: String [UNIQUE, CLM-xxx]</text>
+    <text x="10" y="84" class="attr">+ customer: Ref&lt;User&gt; [FK]</text>
+    <text x="10" y="100" class="attr">+ customerPolicy: Ref&lt;CustomerPolicy&gt; [FK]</text>
+    <text x="10" y="116" class="attr">+ assignedOfficer: Ref&lt;User&gt; [FK, Optional]</text>
+    <text x="10" y="132" class="attr">+ assignedSurveyor: Ref&lt;User&gt; [FK, Optional]</text>
+    <text x="10" y="148" class="attr">+ category: Enum (HEALTH, VEHICLE, PROPERTY)</text>
+    <text x="10" y="164" class="attr">+ requestedAmount: Number</text>
+    <text x="10" y="180" class="attr">+ approvedAmount: Number</text>
+    <text x="10" y="196" class="attr">+ status: Enum (15 Legal States)</text>
+    <text x="10" y="212" class="attr">+ automatedValidation: Object (Score &amp; Rules)</text>
+    <text x="10" y="228" class="attr">+ isHighValueClaim: Boolean (&gt;= ₹5,000)</text>
+    <line x1="0" y1="238" x2="360" y2="238" class="divider" />
+    <text x="10" y="254" class="meth">+ canTransitionTo(targetState, role): Boolean</text>
+    <text x="10" y="270" class="meth">+ calculatePayableAmount(): Number</text>
+  </g>
+
+  <!-- Class 6: ClaimDocument -->
+  <g transform="translate(40, 420)">
+    <rect width="280" height="210" class="class-box" />
+    <rect width="280" height="36" class="class-header" />
+    <text x="140" y="16" class="stereo">&lt;&lt;Mongoose Model&gt;&gt;</text>
+    <text x="140" y="30" class="cname">ClaimDocument</text>
+    <text x="10" y="52" class="attr">+ _id: ObjectId [PK]</text>
+    <text x="10" y="68" class="attr">+ claim: Ref&lt;Claim&gt; [FK]</text>
+    <text x="10" y="84" class="attr">+ uploadedBy: Ref&lt;User&gt; [FK]</text>
+    <text x="10" y="100" class="attr">+ documentCategory: Enum</text>
+    <text x="10" y="116" class="attr">+ fileName: String (UUID)</text>
+    <text x="10" y="132" class="attr">+ originalName: String</text>
+    <text x="10" y="148" class="attr">+ mimeType: String</text>
+    <text x="10" y="164" class="attr">+ sizeBytes: Number</text>
+    <line x1="0" y1="174" x2="280" y2="174" class="divider" />
+    <text x="10" y="194" class="meth">+ getAbsoluteStoragePath(): String</text>
+  </g>
+
+  <!-- Class 7: OCRJob -->
+  <g transform="translate(40, 700)">
+    <rect width="280" height="210" class="class-box" />
+    <rect width="280" height="36" class="class-header" />
+    <text x="140" y="16" class="stereo">&lt;&lt;Mongoose Model&gt;&gt;</text>
+    <text x="140" y="30" class="cname">OCRJob</text>
+    <text x="10" y="52" class="attr">+ _id: ObjectId [PK]</text>
+    <text x="10" y="68" class="attr">+ claimDocument: Ref&lt;Doc&gt; [FK]</text>
+    <text x="10" y="84" class="attr">+ claim: Ref&lt;Claim&gt; [FK]</text>
+    <text x="10" y="100" class="attr">+ status: Enum (PEND/COMP/FAIL)</text>
+    <text x="10" y="116" class="attr">+ extractedText: String</text>
+    <text x="10" y="132" class="attr">+ extractedFields: Object</text>
+    <text x="10" y="148" class="attr">+ opticalConfidence: Number</text>
+    <text x="10" y="164" class="attr">+ confidenceScore: Number</text>
+    <line x1="0" y1="174" x2="280" y2="174" class="divider" />
+    <text x="10" y="194" class="meth">+ parseRegexEntities(): Object</text>
+  </g>
+
+  <!-- Class 8: SurveyReport -->
+  <g transform="translate(470, 710)">
+    <rect width="360" height="200" class="class-box" />
+    <rect width="360" height="36" class="class-header" />
+    <text x="180" y="16" class="stereo">&lt;&lt;Mongoose Model&gt;&gt;</text>
+    <text x="180" y="30" class="cname">SurveyReport</text>
+    <text x="10" y="52" class="attr">+ _id: ObjectId [PK]</text>
+    <text x="10" y="68" class="attr">+ claim: Ref&lt;Claim&gt; [FK]</text>
+    <text x="10" y="84" class="attr">+ surveyor: Ref&lt;User&gt; [FK]</text>
+    <text x="10" y="100" class="attr">+ inspectionDate: Date</text>
+    <text x="10" y="116" class="attr">+ damageAssessment: String</text>
+    <text x="10" y="132" class="attr">+ estimatedRepairCost: Number</text>
+    <text x="10" y="148" class="attr">+ isClaimValid: Boolean</text>
+    <text x="10" y="164" class="attr">+ photoUrls: Array&lt;String&gt;</text>
+    <line x1="0" y1="174" x2="360" y2="174" class="divider" />
+    <text x="10" y="192" class="meth">+ submitReport(): Boolean</text>
+  </g>
+
+  <!-- Class 9: Settlement -->
+  <g transform="translate(970, 420)">
+    <rect width="340" height="230" class="class-box" />
+    <rect width="340" height="36" class="class-header" />
+    <text x="170" y="16" class="stereo">&lt;&lt;Mongoose Model&gt;&gt;</text>
+    <text x="170" y="30" class="cname">Settlement</text>
+    <text x="10" y="52" class="attr">+ _id: ObjectId [PK]</text>
+    <text x="10" y="68" class="attr">+ settlementReference: String [UNIQUE]</text>
+    <text x="10" y="84" class="attr">+ claim: Ref&lt;Claim&gt; [FK]</text>
+    <text x="10" y="100" class="attr">+ customer: Ref&lt;User&gt; [FK]</text>
+    <text x="10" y="116" class="attr">+ approvedAmount: Number</text>
+    <text x="10" y="132" class="attr">+ paymentMethod: Enum (BANK/UPI)</text>
+    <text x="10" y="148" class="attr">+ status: Enum (PEND/PROC/SETTLED)</text>
+    <text x="10" y="164" class="attr">+ authorizedBy: Ref&lt;User&gt; [FK]</text>
+    <text x="10" y="180" class="attr">+ disbursedAt: Date</text>
+    <line x1="0" y1="190" x2="340" y2="190" class="divider" />
+    <text x="10" y="208" class="meth">+ generateVoucher(): String</text>
+    <text x="10" y="224" class="meth">+ executeDisbursement(): Boolean</text>
+  </g>
+
+  <!-- Association Lines -->
+  <!-- User to CustomerPolicy -->
+  <line x1="320" y1="190" x2="710" y2="190" class="assoc" />
+  <text x="330" y="182" class="multi">1</text>
+  <text x="680" y="182" class="multi">0..*</text>
+
+  <!-- PolicyProduct to CustomerPolicy -->
+  <line x1="660" y1="190" x2="710" y2="190" class="assoc" />
+
+  <!-- CustomerPolicy to Claim -->
+  <line x1="860" y1="320" x2="860" y2="350" class="assoc" />
+  <line x1="860" y1="350" x2="720" y2="350" class="assoc" />
+  <line x1="720" y1="350" x2="720" y2="380" class="assoc" />
+  <text x="870" y="340" class="multi">1</text>
+  <text x="730" y="375" class="multi">0..*</text>
+
+  <!-- Claim to ClaimDocument -->
+  <line x1="470" y1="520" x2="320" y2="520" class="assoc" />
+  <text x="445" y="512" class="multi">1</text>
+  <text x="335" y="512" class="multi">1..*</text>
+
+  <!-- ClaimDocument to OCRJob -->
+  <line x1="180" y1="630" x2="180" y2="700" class="assoc" />
+  <text x="190" y="650" class="multi">1</text>
+  <text x="190" y="690" class="multi">1</text>
+
+  <!-- Claim to SurveyReport -->
+  <line x1="650" y1="660" x2="650" y2="710" class="assoc" />
+  <text x="660" y="680" class="multi">1</text>
+  <text x="660" y="700" class="multi">0..1</text>
+
+  <!-- Claim to Settlement -->
+  <line x1="830" y1="520" x2="970" y2="520" class="assoc" />
+  <text x="845" y="512" class="multi">1</text>
+  <text x="945" y="512" class="multi">0..1</text>
+
+</svg>

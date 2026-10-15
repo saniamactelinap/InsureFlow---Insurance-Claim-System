@@ -1,0 +1,244 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1150" height="1250" viewBox="0 0 1150 1250">
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .border { fill: none; stroke: #000000; stroke-width: 2; }
+      .title { font-family: 'Segoe UI', Arial, sans-serif; font-size: 20px; font-weight: bold; fill: #000000; text-anchor: middle; }
+      .subtitle { font-family: 'Segoe UI', Arial, sans-serif; font-size: 12px; fill: #333333; text-anchor: middle; font-style: italic; }
+      .swimlane-header { font-family: 'Segoe UI', Arial, sans-serif; font-size: 12px; font-weight: bold; fill: #000000; text-anchor: middle; }
+      .swimlane-line { stroke: #000000; stroke-width: 1; stroke-dasharray: 4,4; }
+      .init-node { fill: #000000; }
+      .final-node-outer { fill: none; stroke: #000000; stroke-width: 2; }
+      .final-node-inner { fill: #000000; }
+      .action-box { fill: #ffffff; stroke: #000000; stroke-width: 1.5; rx: 12; ry: 12; }
+      .action-text { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11px; font-weight: bold; fill: #000000; text-anchor: middle; }
+      .action-sub { font-family: 'Segoe UI', Arial, sans-serif; font-size: 9px; fill: #444444; text-anchor: middle; }
+      .decision { fill: #ffffff; stroke: #000000; stroke-width: 1.5; }
+      .arrow { stroke: #000000; stroke-width: 1.5; fill: none; marker-end: url(#arr); }
+      .branch-lbl { font-family: 'Consolas', monospace; font-size: 10px; font-weight: bold; fill: #000000; }
+    </style>
+    <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#000000" />
+    </marker>
+  </defs>
+
+  <rect width="1150" height="1250" class="bg" />
+  <rect x="15" y="15" width="1120" height="1220" class="border" />
+
+  <text x="575" y="46" class="title">FIGURE 5: UML ACTIVITY DIAGRAM OF INSUREFLOW</text>
+  <text x="575" y="66" class="subtitle">Complete Workflow Logic: Control Flow, Decision Diamonds, Surveyor Triggers, Review Gates, and Final Settlement States</text>
+
+  <!-- Swimlanes: 4 Partitions -->
+  <!-- 1. Customer: 30..280 (x=155) -->
+  <!-- 2. System Automated: 280..580 (x=430) -->
+  <!-- 3. Officer & Surveyor: 580..860 (x=720) -->
+  <!-- 4. Manager & Finance: 860..1120 (x=990) -->
+
+  <rect x="30" y="80" width="260" height="30" fill="#f1f5f9" stroke="#000000" stroke-width="1" />
+  <text x="160" y="100" class="swimlane-header">CUSTOMER WORKSPACE</text>
+
+  <rect x="290" y="80" width="290" height="30" fill="#f1f5f9" stroke="#000000" stroke-width="1" />
+  <text x="435" y="100" class="swimlane-header">AUTOMATED SYSTEM / OCR</text>
+
+  <rect x="580" y="80" width="280" height="30" fill="#f1f5f9" stroke="#000000" stroke-width="1" />
+  <text x="720" y="100" class="swimlane-header">OFFICER &amp; SURVEYOR</text>
+
+  <rect x="860" y="80" width="260" height="30" fill="#f1f5f9" stroke="#000000" stroke-width="1" />
+  <text x="990" y="100" class="swimlane-header">CLAIMS MANAGER &amp; FINANCE</text>
+
+  <!-- Swimlane Dividers -->
+  <line x1="290" y1="110" x2="290" y2="1200" class="swimlane-line" />
+  <line x1="580" y1="110" x2="580" y2="1200" class="swimlane-line" />
+  <line x1="860" y1="110" x2="860" y2="1200" class="swimlane-line" />
+
+  <!-- Initial Node in Customer lane -->
+  <circle cx="160" cy="140" r="10" class="init-node" />
+  <line x1="160" y1="150" x2="160" y2="180" class="arrow" />
+
+  <!-- Action 1: Fill Claim Form -->
+  <g transform="translate(60, 180)">
+    <rect width="200" height="45" class="action-box" />
+    <text x="100" y="22" class="action-text">Fill Claim Form &amp; Incident</text>
+    <text x="100" y="36" class="action-sub">(Date, Description, Amount)</text>
+  </g>
+  <line x1="160" y1="225" x2="160" y2="255" class="arrow" />
+
+  <!-- Action 2: Upload Documents -->
+  <g transform="translate(60, 255)">
+    <rect width="200" height="45" class="action-box" />
+    <text x="100" y="22" class="action-text">Upload Documents</text>
+    <text x="100" y="36" class="action-sub">(Bills, Discharge Summary, FIR)</text>
+  </g>
+
+  <!-- Move to System Lane -->
+  <line x1="260" y1="277" x2="330" y2="277" class="arrow" />
+
+  <!-- Decision 1: Mandatory Documents Present? -->
+  <polygon points="435,255 490,277 435,300 380,277" class="decision" />
+  <text x="435" y="280" font-family="Segoe UI" font-size="9px" font-weight="bold" fill="#000000" text-anchor="middle">Docs Check</text>
+
+  <!-- Decision 1: NO -> Loop back to Customer -->
+  <line x1="435" y1="300" x2="435" y2="330" class="arrow" />
+  <line x1="435" y1="330" x2="260" y2="330" class="arrow" />
+  <text x="445" y="320" class="branch-lbl">[No: Missing Required Files]</text>
+
+  <g transform="translate(60, 310)">
+    <rect width="200" height="40" class="action-box" stroke-dasharray="3,3" />
+    <text x="100" y="20" class="action-text">DOCUMENTS_REQUIRED</text>
+    <text x="100" y="32" class="action-sub">Customer Uploads Deficiencies</text>
+  </g>
+  <line x1="160" y1="310" x2="160" y2="300" class="arrow" />
+
+  <!-- Decision 1: YES -> Asynchronous OCR -->
+  <line x1="490" y1="277" x2="520" y2="277" class="arrow" />
+  <line x1="520" y1="277" x2="520" y2="380" class="arrow" />
+  <line x1="520" y1="380" x2="490" y2="380" class="arrow" />
+  <text x="495" y="270" class="branch-lbl">[Yes: Ingested]</text>
+
+  <!-- Action 3: OCR Extraction -->
+  <g transform="translate(330, 360)">
+    <rect width="210" height="45" class="action-box" />
+    <text x="105" y="22" class="action-text">Asynchronous OCR Job</text>
+    <text x="105" y="36" class="action-sub">pdf-parse &amp; Tesseract.js Regex</text>
+  </g>
+  <line x1="435" y1="405" x2="435" y2="435" class="arrow" />
+
+  <!-- Action 4: Rule Engine Evaluation -->
+  <g transform="translate(330, 435)">
+    <rect width="210" height="45" class="action-box" />
+    <text x="105" y="22" class="action-text">Evaluate 7 Rule Engine Checks</text>
+    <text x="105" y="36" class="action-sub">Dates, Category, Caps, Duplicates</text>
+  </g>
+  <line x1="435" y1="480" x2="435" y2="510" class="arrow" />
+
+  <!-- Decision 2: Rule Score Calculation -->
+  <polygon points="435,510 490,532 435,555 380,532" class="decision" />
+  <text x="435" y="535" font-family="Segoe UI" font-size="9px" font-weight="bold" fill="#000000" text-anchor="middle">Score &gt;= 70%?</text>
+
+  <!-- Rule Score Branches to Officer Lane -->
+  <line x1="490" y1="532" x2="620" y2="532" class="arrow" />
+  <text x="500" y="525" class="branch-lbl">[Pass: Low Risk]</text>
+
+  <line x1="380" y1="532" x2="350" y2="532" class="arrow" />
+  <line x1="350" y1="532" x2="350" y2="590" class="arrow" />
+  <line x1="350" y1="590" x2="620" y2="590" class="arrow" />
+  <text x="355" y="582" class="branch-lbl">[Fail/Flagged: High Risk Review]</text>
+
+  <!-- Action 5: Officer Review in Work Queue -->
+  <g transform="translate(620, 510)">
+    <rect width="200" height="90" class="action-box" />
+    <text x="100" y="24" class="action-text">Officer Work Queue</text>
+    <text x="100" y="42" class="action-sub">• Side-by-side OCR audit</text>
+    <text x="100" y="58" class="action-sub">• Rule compliance flags</text>
+    <text x="100" y="74" class="action-sub">• Policy entitlement check</text>
+  </g>
+  <line x1="720" y1="600" x2="720" y2="630" class="arrow" />
+
+  <!-- Decision 3: Survey Inspection Mandated? -->
+  <polygon points="720,630 780,655 720,680 660,655" class="decision" />
+  <text x="720" y="658" font-family="Segoe UI" font-size="9px" font-weight="bold" fill="#000000" text-anchor="middle">Survey Req?</text>
+  <text x="785" y="650" class="branch-lbl">[Yes: &gt;= ₹5000 / Vehicular]</text>
+
+  <!-- Surveyor Branch -->
+  <line x1="780" y1="655" x2="820" y2="655" class="arrow" />
+  <line x1="820" y1="655" x2="820" y2="710" class="arrow" />
+  <line x1="820" y1="710" x2="780" y2="710" class="arrow" />
+
+  <g transform="translate(620, 690)">
+    <rect width="200" height="50" class="action-box" />
+    <text x="100" y="20" class="action-text">Surveyor Inspection</text>
+    <text x="100" y="34" class="action-sub">On-site Damage &amp; Cost Estimation</text>
+  </g>
+
+  <line x1="620" y1="715" x2="590" y2="715" class="arrow" />
+  <line x1="590" y1="715" x2="590" y2="765" class="arrow" />
+  <line x1="590" y1="765" x2="620" y2="765" class="arrow" />
+
+  <!-- Decision 3 NO path -->
+  <line x1="660" y1="655" x2="610" y2="655" class="arrow" />
+  <line x1="610" y1="655" x2="610" y2="765" class="arrow" />
+  <line x1="610" y1="765" x2="620" y2="765" class="arrow" />
+  <text x="615" y="645" class="branch-lbl">[No: Desk Adjudication]</text>
+
+  <!-- Action 6: Formulate Recommendation -->
+  <g transform="translate(620, 750)">
+    <rect width="200" height="45" class="action-box" />
+    <text x="100" y="22" class="action-text">Formulate Recommendation</text>
+    <text x="100" y="36" class="action-sub">Escalate to 'MANAGER_REVIEW'</text>
+  </g>
+
+  <!-- Pass to Manager Lane -->
+  <line x1="820" y1="772" x2="890" y2="772" class="arrow" />
+
+  <!-- Action 7: Manager Review -->
+  <g transform="translate(890, 750)">
+    <rect width="200" height="45" class="action-box" />
+    <text x="100" y="22" class="action-text">Manager Review Roster</text>
+    <text x="100" y="36" class="action-sub">Audit Officer Notes &amp; Survey</text>
+  </g>
+  <line x1="990" y1="795" x2="990" y2="830" class="arrow" />
+
+  <!-- Decision 4: Executive Decision (Approve / Reject / Return) -->
+  <polygon points="990,830 1060,860 990,890 920,860" class="decision" />
+  <text x="990" y="863" font-family="Segoe UI" font-size="9px" font-weight="bold" fill="#000000" text-anchor="middle">Manager Action</text>
+
+  <!-- Decision 4: Return for info -> Back to Officer Queue -->
+  <line x1="920" y1="860" x2="840" y2="860" class="arrow" />
+  <line x1="840" y1="860" x2="840" y2="570" class="arrow" />
+  <line x1="840" y1="570" x2="820" y2="570" class="arrow" />
+  <text x="845" y="850" class="branch-lbl">[Return for Inquiry]</text>
+
+  <!-- Decision 4: REJECT -->
+  <line x1="1060" y1="860" x2="1100" y2="860" class="arrow" />
+  <line x1="1100" y1="860" x2="1100" y2="930" class="arrow" />
+  <line x1="1100" y1="930" x2="1050" y2="930" class="arrow" />
+  <text x="1065" y="850" class="branch-lbl">[Reject]</text>
+
+  <g transform="translate(890, 910)">
+    <rect width="160" height="40" class="action-box" />
+    <text x="80" y="24" class="action-text">Status: REJECTED</text>
+  </g>
+
+  <!-- Decision 4: APPROVE -->
+  <line x1="990" y1="890" x2="990" y2="980" class="arrow" />
+  <text x="1000" y="910" class="branch-lbl">[Approve Claim]</text>
+
+  <!-- Action 8: Settlement Creation -->
+  <g transform="translate(890, 980)">
+    <rect width="200" height="45" class="action-box" />
+    <text x="100" y="20" class="action-text">Generate Settlement Voucher</text>
+    <text x="100" y="34" class="action-sub">SET-YYYYMMDD-XXXX (PENDING)</text>
+  </g>
+  <line x1="990" y1="1025" x2="990" y2="1060" class="arrow" />
+
+  <!-- Action 9: Treasury Bank Disbursement -->
+  <g transform="translate(890, 1060)">
+    <rect width="200" height="45" class="action-box" />
+    <text x="100" y="20" class="action-text">Disburse Bank Transfer</text>
+    <text x="100" y="34" class="action-sub">Transition Status to 'SETTLED'</text>
+  </g>
+  <line x1="990" y1="1105" x2="990" y2="1140" class="arrow" />
+
+  <!-- Notify Customer & Final Nodes -->
+  <line x1="890" y1="1082" x2="260" y2="1082" class="arrow" />
+  <g transform="translate(60, 1060)">
+    <rect width="200" height="45" class="action-box" />
+    <text x="100" y="20" class="action-text">Receive Payout Alert</text>
+    <text x="100" y="34" class="action-sub">Bank Credit Confirmation</text>
+  </g>
+
+  <!-- Terminal Nodes -->
+  <!-- Final Node Approved -->
+  <g transform="translate(990, 1155)">
+    <circle cx="0" cy="0" r="14" class="final-node-outer" />
+    <circle cx="0" cy="0" r="8" class="final-node-inner" />
+  </g>
+
+  <!-- Final Node Rejected -->
+  <line x1="970" y1="950" x2="970" y2="970" class="arrow" />
+  <g transform="translate(970, 970)">
+    <circle cx="0" cy="0" r="12" class="final-node-outer" />
+    <circle cx="0" cy="0" r="6" class="final-node-inner" />
+  </g>
+
+</svg>

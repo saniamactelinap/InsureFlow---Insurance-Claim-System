@@ -1,0 +1,77 @@
+erDiagram
+  users ||--o{ customerpolicies : "customer"
+  policyproducts ||--o{ customerpolicies : "product"
+  customerpolicies ||--o{ claims : "customerPolicy"
+  users ||--o{ claims : "customer"
+  claims ||--|{ claimdocuments : "claim"
+  claimdocuments ||--|| ocrjobs : "claimDocument"
+  claims ||--o| surveyreports : "claim"
+  claims ||--o| settlements : "claim"
+
+  users {
+    ObjectId _id PK
+    String name
+    String email UK
+    String password
+    Enum role
+    Boolean isActive
+  }
+
+  policyproducts {
+    ObjectId _id PK
+    String productName
+    String insurer
+    String planCode UK
+    Number coverageLimit
+    Boolean isPublished
+  }
+
+  customerpolicies {
+    ObjectId _id PK
+    ObjectId customer FK
+    ObjectId product FK
+    String policyNumber UK
+    Number coverageAmount
+    Date startDate
+    Date endDate
+  }
+
+  claims {
+    ObjectId _id PK
+    String claimReference UK
+    ObjectId customer FK
+    ObjectId customerPolicy FK
+    Number requestedAmount
+    Number approvedAmount
+    Enum status
+  }
+
+  claimdocuments {
+    ObjectId _id PK
+    ObjectId claim FK
+    String fileName
+    Enum documentCategory
+  }
+
+  ocrjobs {
+    ObjectId _id PK
+    ObjectId claimDocument FK
+    String extractedText
+    Number confidenceScore
+  }
+
+  surveyreports {
+    ObjectId _id PK
+    ObjectId claim FK
+    ObjectId surveyor FK
+    String damageAssessment
+    Number estimatedRepairCost
+  }
+
+  settlements {
+    ObjectId _id PK
+    String settlementReference UK
+    ObjectId claim FK
+    Number approvedAmount
+    Enum status
+  }
