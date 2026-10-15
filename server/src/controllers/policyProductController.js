@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { PolicyProduct } from '../models/PolicyProduct.js';
 import { auditService } from '../services/auditService.js';
 
@@ -36,7 +37,9 @@ export const listProducts = async (req, res, next) => {
 
 export const getProductById = async (req, res, next) => {
   try {
-    const product = await PolicyProduct.findById(req.params.id);
+    const { id } = req.params;
+    const query = mongoose.Types.ObjectId.isValid(id) ? { _id: id } : { planCode: id };
+    const product = await PolicyProduct.findOne(query);
     if (!product) {
       return res.status(404).json({ success: false, message: 'Policy product not found.' });
     }
@@ -49,15 +52,53 @@ export const getProductById = async (req, res, next) => {
 export const compareProducts = async (req, res, next) => {
   try {
     const { ids } = req.query;
-    if (!ids) {
-      return res.status(400).json({ success: false, message: 'Comma-separated policy IDs required in query (?ids=id1,id2)' });
+    if (!ids || typeof ids !== 'string' || !ids.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Comma-separated policy IDs required in query (?ids=id1,id2)',
+      });
     }
 
-    const idList = ids.split(',').map(id => id.trim()).filter(Boolean);
-    const products = await PolicyProduct.find({ _id: { $in: idList } });
+    // Extract unique identifier tokens (ObjectIds or planCodes)
+    const rawTokens = ids.split(',').map((id) => id.trim()).filter(Boolean);
+    const uniqueTokens = Array.from(new Set(rawTokens));
+
+    if (uniqueTokens.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'At least one valid policy identifier is required.',
+      });
+    }
+
+    const validObjectIds = uniqueTokens.filter((token) => mongoose.Types.ObjectId.isValid(token));
+    const orConditions = [];
+
+    if (validObjectIds.length > 0) {
+      orConditions.push({ _id: { $in: validObjectIds } });
+    }
+    orConditions.push({ planCode: { $in: uniqueTokens } });
+
+    // Only return published policies for public comparison
+    const products = await PolicyProduct.find({
+      isPublished: true,
+      $or: orConditions,
+    });
+
+    // Sort into the exact order requested by uniqueTokens
+    products.sort((a, b) => {
+      const idxA = uniqueTokens.findIndex(
+        (t) => t === String(a._id) || t.toUpperCase() === (a.planCode || '').toUpperCase()
+      );
+      const idxB = uniqueTokens.findIndex(
+        (t) => t === String(b._id) || t.toUpperCase() === (b.planCode || '').toUpperCase()
+      );
+      return (idxA === -1 ? 999 : idxA) - (idxB === -1 ? 999 : idxB);
+    });
 
     res.json({
       success: true,
+      count: products.length,
+      requestedCount: uniqueTokens.length,
       data: products,
     });
   } catch (error) {
